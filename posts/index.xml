@@ -6,18 +6,79 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 08 Oct 2023 18:26:13 +0000</lastBuildDate><atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 08 Oct 2023 13:54:43 -0700</lastBuildDate><atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Hellow World</title>
-      <link>/posts/hellow-world.html</link>
-      <pubDate>Sun, 08 Oct 2023 18:26:13 +0000</pubDate>
+      <title>A problem with a read optimized service</title>
+      <link>/posts/blog-framework.html</link>
+      <pubDate>Sun, 08 Oct 2023 13:54:43 -0700</pubDate>
       
-      <guid>/posts/hellow-world.html</guid>
-      <description>Introduction This is bold text, and this is emphasized text.
-Visit the Hugo website!</description>
-      <content>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;This is &lt;strong&gt;bold&lt;/strong&gt; text, and this is &lt;em&gt;emphasized&lt;/em&gt; text.&lt;/p&gt;
-&lt;p&gt;Visit the &lt;a href=&#34;https://gohugo.io&#34;&gt;Hugo&lt;/a&gt; website!&lt;/p&gt;
+      <guid>/posts/blog-framework.html</guid>
+      <description>Tradeoffs in the design of a read optimized service TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.
+Disclaimer: I might not know the context of the design decisions, they were made by the previous owners.</description>
+      <content>&lt;h1 id=&#34;tradeoffs-in-the-design-of-a-read-optimized-service&#34;&gt;Tradeoffs in the design of a read optimized service&lt;/h1&gt;
+&lt;p&gt;TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.&lt;/p&gt;
+&lt;p&gt;Disclaimer: I might not know the context of the design decisions, they were made by the previous owners. I am just sharing my thoughts on the tradeoffs.&lt;/p&gt;
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+&lt;h3 id=&#34;where-am-i&#34;&gt;Where am I?&lt;/h3&gt;
+&lt;p&gt;As of today (Jun 30 23), I have joined my current team for 1.5 years. The team is quite different from others I have worked with so far. That is, we own services and components which are relatively sparse. In contrast, in my previous team, we have a system with multiple closely related microservices. Data flows in one direction, and upstream and downstream contracts are well defined. Work planning was easy, and collaboration is encouraged. With my current team&amp;rsquo;s ownership, it feels natural to silo team members into different areas of expertise. And so, we adopt this ownership model. This punishes collaboration with overhead costs to get familiar with other areas. This is not to say that collaboration is not encouraged, but it is not as easy as it was before. I wonder which settings is more common in the industry. I would love to hear your thoughts.&lt;/p&gt;
+&lt;h3 id=&#34;what-am-i-doing&#34;&gt;What am I doing?&lt;/h3&gt;
+&lt;p&gt;As part of this ownership model, I was assigned to work on a service. The previous owner left the company shortly after. He did his best to convey the duties and responsibilities, but I still think the transition could have been better planned, maybe a management problem. My boss was supportive, and didn&amp;rsquo;t push me too much. I did prefer to have a more hand-holding experience, but there&amp;rsquo;s merit in learning things through diving the code and reference the unstructured/halfbaked documents. One of the fortunate things is that the difficult part of this service is the scaling, and not business logic. The business logic is relatively simple, it&amp;rsquo;s a CRUD store! The scaling part is the interesting part, and it&amp;rsquo;s somewhat my bread and butter. I spent 2 years with the previous team working on scaling problems. I am still not the expert, but I did learn a lot through my mentor and I am grateful for that.&lt;/p&gt;
+&lt;h2 id=&#34;the-service&#34;&gt;The service&lt;/h2&gt;
+&lt;h3 id=&#34;purpose&#34;&gt;Purpose&lt;/h3&gt;
+&lt;p&gt;As aforementioned, it&amp;rsquo;s a CRUD store. I should probably stop at that without going too much into the business. By nature, it&amp;rsquo;s read-heavy, about 2000 query per second globally. The p99 latency on the service is typically sub 50ms.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../20230630171617.png&#34; alt=&#34;QPS&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;architecture&#34;&gt;Architecture&lt;/h3&gt;
+&lt;p&gt;I think that was quite impressive. There are a few design decisions that went into this distributed service system. I will go through them one by one.&lt;/p&gt;
+&lt;h4 id=&#34;regionally-deployment&#34;&gt;Regionally deployment&lt;/h4&gt;
+&lt;p&gt;There are x regions, and in each, there are y hosts. All hosts are behind a regional traffic manager based on performance.&lt;/p&gt;
+&lt;h4 id=&#34;underlying-persistent-storage&#34;&gt;Underlying persistent storage&lt;/h4&gt;
+&lt;p&gt;NoSql, globally replicated DB, but not sharded.&lt;/p&gt;
+&lt;h4 id=&#34;full-in-memory-cache&#34;&gt;Full In-memory cache&lt;/h4&gt;
+&lt;p&gt;Store a copy of the DB in-mem cache. Upon handling read requests, only query the cache, not the underlying datastore.&lt;/p&gt;
+&lt;h4 id=&#34;cache-invalidation&#34;&gt;Cache invalidation&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Upon handling write requests, also write a change record to another table.&lt;/li&gt;
+&lt;li&gt;For all hosts, periodically, read the change record table, query the main table and apply the changes to the in-mem cache.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-tradeoffs&#34;&gt;The tradeoffs&lt;/h2&gt;
+&lt;p&gt;With all that said, let&amp;rsquo;s dive into the challenges. I will write this part in the chronological order of the incidents my team dealed with throughout the years.&lt;/p&gt;
+&lt;h3 id=&#34;incident-1-high-cpu-usage&#34;&gt;Incident 1: High CPU usage&lt;/h3&gt;
+&lt;p&gt;There was a surge in traffic, this triggered our CPU usage alert. We horizontally scaled out the service, meaning add more instances to the region where the alarm is triggered.&lt;/p&gt;
+&lt;h4 id=&#34;the-problem-with-scaling&#34;&gt;The problem with scaling&lt;/h4&gt;
+&lt;p&gt;Now CPU usage drops, but we were hit with another problem. We started to see 429 Too many requests error from the underlying database. The problem with scaling out services, in my opinion, is scaling down is sticky. &lt;em&gt;If there&amp;rsquo;s no problem, maybe don&amp;rsquo;t touch it&amp;quot;&lt;/em&gt; mindset.&lt;/p&gt;
+&lt;h4 id=&#34;the-new-bottleneck&#34;&gt;The new bottleneck&lt;/h4&gt;
+&lt;p&gt;Followed is the fan-out effect. We have many hosts querying the same global DB instance. So the DB became the bottleneck. Lucky for us, we have not reached the limit of scaling out the DB. We only reached the capped capacity, and we can increase this cap. Today, the DB alone costs more money in a month than what I get paid in a year. I feel unjust, but who am I to complain. Maybe it&amp;rsquo;s a common practice in the industry.&lt;/p&gt;
+&lt;h4 id=&#34;lesson-learned&#34;&gt;Lesson learned&lt;/h4&gt;
+&lt;p&gt;Maybe we need a smarter solution to CPU usage problem.&lt;/p&gt;
+&lt;h3 id=&#34;incident-2-i-created-a-record-but-cant-query-for-it&#34;&gt;Incident 2: &lt;em&gt;&amp;ldquo;I created a record, but can&amp;rsquo;t query for it&amp;rdquo;&lt;/em&gt;&lt;/h3&gt;
+&lt;p&gt;The larger organization is focusing on improving the reliability of services. That is, we desire a high reliability metric with commitment in terms of how many 9s we want to achieve. For example, with 4 9s being 99.99% reliable. We have no problem achieving this metric for the service. As long as there is no crash, the service will return some or nothing from the cache. Note that, cache miss will not result in drop in reliability.&lt;/p&gt;
+&lt;h4 id=&#34;the-question-we-asked&#34;&gt;The question we asked&lt;/h4&gt;
+&lt;p&gt;It is eventual consistent, so it may take some time.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;team: &lt;em&gt;&amp;ldquo;How long ago did you create the record&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;client: &lt;em&gt;&amp;ldquo;long enough&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;We have not commited to a SLA for the eventual consistency. However, if it&amp;rsquo;s in the hours, without saying too much about the business logic, let&amp;rsquo;s just say it&amp;rsquo;s not acceptable.&lt;/p&gt;
+&lt;h4 id=&#34;what-is-taking-so-long&#34;&gt;What is taking so long?&lt;/h4&gt;
+&lt;p&gt;The interval set for cache invalidation is typically within 10 seconds. The last scaling out came to haunt us. There was a surge in write traffic, with each write, we amplified the traffic to our DB. To the point 80% of traffic to the DB was throttled.&lt;/p&gt;
+&lt;p&gt;For each throttled request, we retry, but without jitter, meaning after a fix period, all hosts pound the DB on beat. This is a classic thundering herd problem. If leave as is, maybe it will take a few days for hosts to digest the change. However, records that exceeded the max retry attempt will be &amp;ldquo;missing&amp;rdquo;.&lt;/p&gt;
+&lt;h4 id=&#34;the-mitigation&#34;&gt;The mitigation&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;A good old restart&lt;/strong&gt;. Hah I learned this trick from my father when I was 5. It works this time as well. When restarting the host, the queue of changed records is flushed. The host will start with a clean slate. The cache will be repopulated with the latest data from the DB.&lt;/p&gt;
+&lt;h4 id=&#34;lesson-learned-2&#34;&gt;Lesson learned 2&lt;/h4&gt;
+&lt;p&gt;We need to be mindful about the fan-out effect and the thundering herd problem. After the incident, maybe we should add jitter for retrying. I also changed the queue of changed records to be a set. This way, we can avoid duplicate work, e.g. if record A is changed twice, we only need to apply the change once.&lt;/p&gt;
+&lt;h3 id=&#34;incident-3-and-onwards-we-need-your-team-to-support-our-new-feature&#34;&gt;Incident 3 and onwards: &lt;em&gt;&amp;ldquo;We need your team to support our new feature&amp;rdquo;&lt;/em&gt;&lt;/h3&gt;
+&lt;p&gt;A lot of the times, incidents for this service were resulted from the increase in write requests without sufficient scaling out of either the service host or the underlying datastore. This service, as I mentioned, is read-heavy. The design decisions were made with this in mind and thus the tradeoffs is to sacrifice write performance for read performance. This is a good tradeoff, but it&amp;rsquo;s not without its own problems.&lt;/p&gt;
+&lt;h4 id=&#34;the-communication-issue&#34;&gt;The communication issue&lt;/h4&gt;
+&lt;p&gt;They are preventable, or at the least, there won&amp;rsquo;t be an incident if we know of the write traffic surge before hand and scale out the bottlenecks accordingly.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;team: &lt;em&gt;&amp;ldquo;We are going to launch a new feature, it will increase the write traffic by 10x&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;my team: &lt;em&gt;&amp;ldquo;ok&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;However, the communication is not always this clear. Sometimes, we are not aware of the new feature. Sometimes, we are aware, but we don&amp;rsquo;t know the impact. Sometimes, we are aware, but we don&amp;rsquo;t know how much it will increase the traffic. Sometimes, we are aware, but we don&amp;rsquo;t know if it&amp;rsquo;s a one time thing or a recurring thing. Sometimes, we are aware, but we don&amp;rsquo;t know if it&amp;rsquo;s a one time thing or a recurring thing. Sometimes, we are aware, but we don&amp;rsquo;t know if it&amp;rsquo;s a one time thing or a recurring thing. Oops, looks like I am repeating myself. You get the idea.&lt;/p&gt;
+&lt;h4 id=&#34;the-solution&#34;&gt;The solution&lt;/h4&gt;
+&lt;p&gt;In my opinion, for my team, we should establish clear SLAs with the clients. If there was expected increase in traffic, it should be discussed laterally.&lt;/p&gt;
+&lt;p&gt;I voiced it out a couple of times but never followed through. Sorry boss! For some team, I&amp;rsquo;m building up the connection, hopefully there will be less surprises in the future.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
 </content>
     </item>
     

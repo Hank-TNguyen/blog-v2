@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>A problem with a read optimized service :: My New Hugo Site</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tradeoffs in the design of a read optimized service TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.
+Disclaimer: I might not know the context of the design decisions, they were made by the previous owners." />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="../posts/blog-framework.html" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-746FE3Q60E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-746FE3Q60E', { 'anonymize_ip': false });
+}
+</script>
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="../styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="../img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="../img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="A problem with a read optimized service">
+<meta property="og:description" content="Tradeoffs in the design of a read optimized service TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.
+Disclaimer: I might not know the context of the design decisions, they were made by the previous owners." />
+<meta property="og:url" content="/posts/blog-framework.html" />
+<meta property="og:site_name" content="My New Hugo Site" />
+
+  
+  
+  <meta property="og:image" content="/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2023-10-08 13:54:43 -0700 PDT" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="../">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+    
+  </div>
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="../posts/blog-framework.html">A problem with a read optimized service</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2023-10-08</time></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="../tags/"></a>&nbsp;
+      
+      #<a href="../tags/"></a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="tradeoffs-in-the-design-of-a-read-optimized-service">Tradeoffs in the design of a read optimized service<a href="#tradeoffs-in-the-design-of-a-read-optimized-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.</p>
+<p>Disclaimer: I might not know the context of the design decisions, they were made by the previous owners. I am just sharing my thoughts on the tradeoffs.</p>
+<h2 id="intro">Intro<a href="#intro" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="where-am-i">Where am I?<a href="#where-am-i" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>As of today (Jun 30 23), I have joined my current team for 1.5 years. The team is quite different from others I have worked with so far. That is, we own services and components which are relatively sparse. In contrast, in my previous team, we have a system with multiple closely related microservices. Data flows in one direction, and upstream and downstream contracts are well defined. Work planning was easy, and collaboration is encouraged. With my current team&rsquo;s ownership, it feels natural to silo team members into different areas of expertise. And so, we adopt this ownership model. This punishes collaboration with overhead costs to get familiar with other areas. This is not to say that collaboration is not encouraged, but it is not as easy as it was before. I wonder which settings is more common in the industry. I would love to hear your thoughts.</p>
+<h3 id="what-am-i-doing">What am I doing?<a href="#what-am-i-doing" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>As part of this ownership model, I was assigned to work on a service. The previous owner left the company shortly after. He did his best to convey the duties and responsibilities, but I still think the transition could have been better planned, maybe a management problem. My boss was supportive, and didn&rsquo;t push me too much. I did prefer to have a more hand-holding experience, but there&rsquo;s merit in learning things through diving the code and reference the unstructured/halfbaked documents. One of the fortunate things is that the difficult part of this service is the scaling, and not business logic. The business logic is relatively simple, it&rsquo;s a CRUD store! The scaling part is the interesting part, and it&rsquo;s somewhat my bread and butter. I spent 2 years with the previous team working on scaling problems. I am still not the expert, but I did learn a lot through my mentor and I am grateful for that.</p>
+<h2 id="the-service">The service<a href="#the-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="purpose">Purpose<a href="#purpose" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>As aforementioned, it&rsquo;s a CRUD store. I should probably stop at that without going too much into the business. By nature, it&rsquo;s read-heavy, about 2000 query per second globally. The p99 latency on the service is typically sub 50ms.</p>
+<p><img src="../20230630171617.png" alt="QPS"></p>
+<h3 id="architecture">Architecture<a href="#architecture" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I think that was quite impressive. There are a few design decisions that went into this distributed service system. I will go through them one by one.</p>
+<h4 id="regionally-deployment">Regionally deployment<a href="#regionally-deployment" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>There are x regions, and in each, there are y hosts. All hosts are behind a regional traffic manager based on performance.</p>
+<h4 id="underlying-persistent-storage">Underlying persistent storage<a href="#underlying-persistent-storage" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>NoSql, globally replicated DB, but not sharded.</p>
+<h4 id="full-in-memory-cache">Full In-memory cache<a href="#full-in-memory-cache" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Store a copy of the DB in-mem cache. Upon handling read requests, only query the cache, not the underlying datastore.</p>
+<h4 id="cache-invalidation">Cache invalidation<a href="#cache-invalidation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>Upon handling write requests, also write a change record to another table.</li>
+<li>For all hosts, periodically, read the change record table, query the main table and apply the changes to the in-mem cache.</li>
+</ul>
+<h2 id="the-tradeoffs">The tradeoffs<a href="#the-tradeoffs" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>With all that said, let&rsquo;s dive into the challenges. I will write this part in the chronological order of the incidents my team dealed with throughout the years.</p>
+<h3 id="incident-1-high-cpu-usage">Incident 1: High CPU usage<a href="#incident-1-high-cpu-usage" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>There was a surge in traffic, this triggered our CPU usage alert. We horizontally scaled out the service, meaning add more instances to the region where the alarm is triggered.</p>
+<h4 id="the-problem-with-scaling">The problem with scaling<a href="#the-problem-with-scaling" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Now CPU usage drops, but we were hit with another problem. We started to see 429 Too many requests error from the underlying database. The problem with scaling out services, in my opinion, is scaling down is sticky. <em>If there&rsquo;s no problem, maybe don&rsquo;t touch it&quot;</em> mindset.</p>
+<h4 id="the-new-bottleneck">The new bottleneck<a href="#the-new-bottleneck" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Followed is the fan-out effect. We have many hosts querying the same global DB instance. So the DB became the bottleneck. Lucky for us, we have not reached the limit of scaling out the DB. We only reached the capped capacity, and we can increase this cap. Today, the DB alone costs more money in a month than what I get paid in a year. I feel unjust, but who am I to complain. Maybe it&rsquo;s a common practice in the industry.</p>
+<h4 id="lesson-learned">Lesson learned<a href="#lesson-learned" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Maybe we need a smarter solution to CPU usage problem.</p>
+<h3 id="incident-2-i-created-a-record-but-cant-query-for-it">Incident 2: <em>&ldquo;I created a record, but can&rsquo;t query for it&rdquo;</em><a href="#incident-2-i-created-a-record-but-cant-query-for-it" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>The larger organization is focusing on improving the reliability of services. That is, we desire a high reliability metric with commitment in terms of how many 9s we want to achieve. For example, with 4 9s being 99.99% reliable. We have no problem achieving this metric for the service. As long as there is no crash, the service will return some or nothing from the cache. Note that, cache miss will not result in drop in reliability.</p>
+<h4 id="the-question-we-asked">The question we asked<a href="#the-question-we-asked" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>It is eventual consistent, so it may take some time.</p>
+<blockquote>
+<p>team: <em>&ldquo;How long ago did you create the record&rdquo;</em></p>
+<p>client: <em>&ldquo;long enough&rdquo;</em></p>
+</blockquote>
+<p>We have not commited to a SLA for the eventual consistency. However, if it&rsquo;s in the hours, without saying too much about the business logic, let&rsquo;s just say it&rsquo;s not acceptable.</p>
+<h4 id="what-is-taking-so-long">What is taking so long?<a href="#what-is-taking-so-long" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>The interval set for cache invalidation is typically within 10 seconds. The last scaling out came to haunt us. There was a surge in write traffic, with each write, we amplified the traffic to our DB. To the point 80% of traffic to the DB was throttled.</p>
+<p>For each throttled request, we retry, but without jitter, meaning after a fix period, all hosts pound the DB on beat. This is a classic thundering herd problem. If leave as is, maybe it will take a few days for hosts to digest the change. However, records that exceeded the max retry attempt will be &ldquo;missing&rdquo;.</p>
+<h4 id="the-mitigation">The mitigation<a href="#the-mitigation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p><strong>A good old restart</strong>. Hah I learned this trick from my father when I was 5. It works this time as well. When restarting the host, the queue of changed records is flushed. The host will start with a clean slate. The cache will be repopulated with the latest data from the DB.</p>
+<h4 id="lesson-learned-2">Lesson learned 2<a href="#lesson-learned-2" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>We need to be mindful about the fan-out effect and the thundering herd problem. After the incident, maybe we should add jitter for retrying. I also changed the queue of changed records to be a set. This way, we can avoid duplicate work, e.g. if record A is changed twice, we only need to apply the change once.</p>
+<h3 id="incident-3-and-onwards-we-need-your-team-to-support-our-new-feature">Incident 3 and onwards: <em>&ldquo;We need your team to support our new feature&rdquo;</em><a href="#incident-3-and-onwards-we-need-your-team-to-support-our-new-feature" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>A lot of the times, incidents for this service were resulted from the increase in write requests without sufficient scaling out of either the service host or the underlying datastore. This service, as I mentioned, is read-heavy. The design decisions were made with this in mind and thus the tradeoffs is to sacrifice write performance for read performance. This is a good tradeoff, but it&rsquo;s not without its own problems.</p>
+<h4 id="the-communication-issue">The communication issue<a href="#the-communication-issue" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>They are preventable, or at the least, there won&rsquo;t be an incident if we know of the write traffic surge before hand and scale out the bottlenecks accordingly.</p>
+<blockquote>
+<p>team: <em>&ldquo;We are going to launch a new feature, it will increase the write traffic by 10x&rdquo;</em></p>
+<p>my team: <em>&ldquo;ok&rdquo;</em></p>
+</blockquote>
+<p>However, the communication is not always this clear. Sometimes, we are not aware of the new feature. Sometimes, we are aware, but we don&rsquo;t know the impact. Sometimes, we are aware, but we don&rsquo;t know how much it will increase the traffic. Sometimes, we are aware, but we don&rsquo;t know if it&rsquo;s a one time thing or a recurring thing. Sometimes, we are aware, but we don&rsquo;t know if it&rsquo;s a one time thing or a recurring thing. Sometimes, we are aware, but we don&rsquo;t know if it&rsquo;s a one time thing or a recurring thing. Oops, looks like I am repeating myself. You get the idea.</p>
+<h4 id="the-solution">The solution<a href="#the-solution" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>In my opinion, for my team, we should establish clear SLAs with the clients. If there was expected increase in traffic, it should be discussed laterally.</p>
+<p>I voiced it out a couple of times but never followed through. Sorry boss! For some team, I&rsquo;m building up the connection, hopefully there will be less surprises in the future.</p>
+<!-- raw HTML omitted -->
+
+      </div></div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2023 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="../bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
