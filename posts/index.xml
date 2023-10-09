@@ -9,10 +9,10 @@
     <lastBuildDate>Sun, 08 Oct 2023 13:54:43 -0700</lastBuildDate><atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>A problem with a read optimized service</title>
-      <link>/posts/blog-framework.html</link>
+      <link>/posts/read-optimized-service.html</link>
       <pubDate>Sun, 08 Oct 2023 13:54:43 -0700</pubDate>
       
-      <guid>/posts/blog-framework.html</guid>
+      <guid>/posts/read-optimized-service.html</guid>
       <description>Tradeoffs in the design of a read optimized service TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.
 Disclaimer: I might not know the context of the design decisions, they were made by the previous owners.</description>
       <content>&lt;h1 id=&#34;tradeoffs-in-the-design-of-a-read-optimized-service&#34;&gt;Tradeoffs in the design of a read optimized service&lt;/h1&gt;
@@ -78,6 +78,77 @@ Disclaimer: I might not know the context of the design decisions, they were made
 &lt;h4 id=&#34;the-solution&#34;&gt;The solution&lt;/h4&gt;
 &lt;p&gt;In my opinion, for my team, we should establish clear SLAs with the clients. If there was expected increase in traffic, it should be discussed laterally.&lt;/p&gt;
 &lt;p&gt;I voiced it out a couple of times but never followed through. Sorry boss! For some team, I&amp;rsquo;m building up the connection, hopefully there will be less surprises in the future.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>A simple implementation of a static-site generator</title>
+      <link>/posts/blog-framework.html</link>
+      <pubDate>Sun, 08 Oct 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/posts/blog-framework.html</guid>
+      <description>The framework of this blog TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is Showcase | Hugo (gohugo.io). For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.
+The idea I want something lightweight, something that I set up once and then I can focus on the writing.</description>
+      <content>&lt;h1 id=&#34;the-framework-of-this-blog&#34;&gt;The framework of this blog&lt;/h1&gt;
+&lt;p&gt;TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is &lt;a href=&#34;https://gohugo.io/showcase/&#34;&gt;Showcase | Hugo (gohugo.io)&lt;/a&gt;. For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.&lt;/p&gt;
+&lt;h2 id=&#34;the-idea&#34;&gt;The idea&lt;/h2&gt;
+&lt;p&gt;I want something lightweight, something that I set up once and then I can focus on the writing. It might seem counter-intuitive at this point, shouldn&amp;rsquo;t I just use an out-of-the-box solution like wordpress. Eventually it checks out most of the box, but it needs a backend server to run. Usually, it involves some money costs, that I didn&amp;rsquo;t want to pay at the time. Okay, it can be free, but with a lot of tweaking.&lt;/p&gt;
+&lt;p&gt;In retrospect, I didn&amp;rsquo;t know about &lt;a href=&#34;https://gohugo.io/showcase/&#34;&gt;Showcase | Hugo (gohugo.io)&lt;/a&gt;, which is a static site generator. It&amp;rsquo;s a framework that generates a static website. I might have been reinventing the wheel, but what&amp;rsquo;s the harm in it. I learned a whole bunch, it&amp;rsquo;s a good experience.&lt;/p&gt;
+&lt;h3 id=&#34;the-stacks&#34;&gt;The stacks&lt;/h3&gt;
+&lt;p&gt;I will stick with free tools, and here are the assumptions:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Github page is free.&lt;/li&gt;
+&lt;li&gt;I have ChatGpt plus subscription.&lt;/li&gt;
+&lt;li&gt;I know the frontend stacks (HTML, CSS, JS).&lt;/li&gt;
+&lt;li&gt;I have an existing brand &lt;a href=&#34;https://baophotos.ca/&#34;&gt;BAO Photography&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;em&gt;Other JS frameworks, like React, Angular are a little excessive for my purpose.&lt;/em&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;So, let&amp;rsquo;s create a framework that generates static HTML pages, and then host them on Github page. Point the subdomain of the existing brand to the github page, and we can leverage ChatGPT to do the hardwork, writing most of the code.&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The excerpt in the headline might be a little click-baity. One does not need to code, but knowing where which component should be is vital.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;the-setup&#34;&gt;The setup&lt;/h3&gt;
+&lt;p&gt;I will provide step-by-step instructions, following-along is not a must or recommended 😆 My friends call me a troll sometimes, sorry. The reason is that creating your own framework is not the purpose of this post. Let&amp;rsquo;s just use Hugo, or other out-of-the-box solutions, if you need and focus on the writing here.&lt;/p&gt;
+&lt;p&gt;The step-by-step instructions followed is, admitedly, not good. There might be gap, and assumed knowledge.&lt;/p&gt;
+&lt;h4 id=&#34;1-lets-start-with-the-basic-html-page&#34;&gt;1. Let&amp;rsquo;s start with the basic HTML page&lt;/h4&gt;
+&lt;p&gt;Ask ChatGPT or your favorite LLM to generate a basic HTML page with a simple prompt:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;you: &amp;ldquo;Act as a software engineer, write a basic HTML page with title ABC and a tagline XYZ.&amp;rdquo;
+ChatGPT: &amp;ldquo;oh jeez, please do it yourself, I&amp;rsquo;m not a web developer.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&amp;hellip;.&lt;/p&gt;
+&lt;p&gt;ChatGPT: &amp;ldquo;okay, I&amp;rsquo;ll try my best, but don&amp;rsquo;t expect too much.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&amp;hellip;.&lt;/p&gt;
+&lt;p&gt;ChatGPT: &amp;ldquo;here you go, I&amp;rsquo;m done.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Sorry for the unamusing joke there, but I trust your LLM can do it.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../chatgpt-example.png&#34; alt=&#34;chat session&#34;&gt;&lt;/p&gt;
+&lt;p&gt;At this step, you can also add a stylesheet, and other components on the HTML page. For the blog, I added a container for the list of blog posts.&lt;/p&gt;
+&lt;h4 id=&#34;2-how-do-we-present-a-blog-post&#34;&gt;2. How do we present a blog post?&lt;/h4&gt;
+&lt;p&gt;Wordpress has a notion of post and page. I will do something similar, let&amp;rsquo;s present a blog post as an html page, and give the summary as an entry in the container above.&lt;/p&gt;
+&lt;p&gt;I like markdown, and had experience with it. So, I will use markdown to write the blog post. I then I will ask ChatGPT to give me a script, using Python, to convert the markdown to HTML. The end result is something like this &lt;a href=&#34;https://github.com/Hank-TNguyen/blog/blob/main/markdown-to-html.py&#34;&gt;blog/markdown-to-html.py at main - Hank-TNguyen/blog (github.com)&lt;/a&gt; after a lot of iterations. It does a couple of extra things. It will compile the list of blog posts, and generate a json file that contains the metadata of the posts.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../post-metadata.png&#34; alt=&#34;Post metadata&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;3-lets-display-what-we-have-on-the-main-page&#34;&gt;3. Let&amp;rsquo;s display what we have on the main page&lt;/h4&gt;
+&lt;p&gt;We need to populate the container of the blog post in the main page. The json containing the metadata earlier will be used to populate the container. This needs to happen &amp;ldquo;relatively&amp;rdquo; dynamically when the client loads the page. Each of the entry for a post in this container will provide a link to the actual post. What I ended up doing is to use an iframe in the same main page to display the post. When you see this page, you are actually in an iframe, and the main page is in the background. All posts are loaded at startup time. This is not a worry, I know this is a one-person blog, I figure I will probably have a handful of posts. This setup will probably still be fast.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;relatively&amp;rdquo; is in quotes, because all assets are static, dynamic is in the sense that we load the json file and populate the html container.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;4-lets-write-the-first-post&#34;&gt;4. Let&amp;rsquo;s write the first post&lt;/h4&gt;
+&lt;p&gt;As I mentioned, I will use markdown. I asked ChatGPT to give me a powershell script to create a file with a template, a really fancy one I create 😆.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../markdown-snippet.png&#34; alt=&#34;markdownsnippet&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The script will create a file with the name of the post, it follows a simple rule, get other posts and increment the number. The content is the template above. The script ended up looking like this &lt;a href=&#34;https://github.com/Hank-TNguyen/blog/blob/main/WritePost.ps1&#34;&gt;blog/WritePost.ps1 at main - Hank-TNguyen/blog (github.com)&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 id=&#34;5-execute-scripts-and-publish&#34;&gt;5. Execute scripts and publish&lt;/h4&gt;
+&lt;p&gt;If you check out the github repository &lt;a href=&#34;https://github.com/Hank-TNguyen/blog/tree/main&#34;&gt;Hank-TNguyen/blog: Blog (github.com)&lt;/a&gt;, you can test this locally. Following are the commands I execute when writing a new post&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;.\WritePost.ps1 ;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;python markdown-to-html.py;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add . ;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git push ;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;Summary&lt;/h2&gt;
+&lt;p&gt;That was simple enough. Let&amp;rsquo;s summarize what we did. We created a framework that generates static HTML pages, and then host them on Github page. We can leverage ChatGPT to do the hardwork, writing most of the code, but still I&amp;rsquo;m not too worried about my job security, I need to tell ChatGPT what to write. It turns out to be a pretty good, knowledgeable intern in this setup.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../overall.png&#34; alt=&#34;Overall/&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Without ChatGPT, this framework would probably take me a few days to materialize. I did all this in an evening and now spend most of the time on the content. As per the risk of AI taking over our jobs discussion, I think it is somewhat overblown. I think we will be fine, we just need to adapt and learn new skills. It increases productivity in certain setups for sure, but when the context gets more complex, I have yet to find it too useful.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
 </content>
     </item>
