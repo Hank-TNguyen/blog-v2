@@ -1,10 +1,72 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on My New Hugo Site</title>
+    <title>Tags on hanknguyen</title>
     <link>/tags.html</link>
-    <description>Recent content in Tags on My New Hugo Site</description>
+    <description>Recent content in Tags on hanknguyen</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <copyright>hanknguyen {year}</copyright>
+    <lastBuildDate>Sun, 02 Jul 2023 13:54:43 -0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>backend</title>
+      <link>/tags/backend.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/tags/backend.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>blog</title>
+      <link>/tags/blog.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/tags/blog.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>distributedservice</title>
+      <link>/tags/distributedservice.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/tags/distributedservice.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>highQPS</title>
+      <link>/tags/highqps.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/tags/highqps.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>hugo</title>
+      <link>/tags/hugo.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/tags/hugo.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>staticsite</title>
+      <link>/tags/staticsite.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/tags/staticsite.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
   </channel>
 </rss>

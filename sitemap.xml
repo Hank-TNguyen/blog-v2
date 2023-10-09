@@ -3,19 +3,38 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/posts/read-optimized-service.html</loc>
-    <lastmod>2023-10-08T13:54:43-07:00</lastmod>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/posts/blog-framework.html</loc>
-    <lastmod>2023-10-09T15:01:06-07:00</lastmod>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/backend.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/blog.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/distributedservice.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/</loc>
-    <lastmod>2023-10-09T15:01:06-07:00</lastmod>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/highqps.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/hugo.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/posts.html</loc>
-    <lastmod>2023-10-09T15:01:06-07:00</lastmod>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
-    <loc>/categories.html</loc>
+    <loc>/tags/staticsite.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/tags.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/categories.html</loc>
   </url>
 </urlset>
