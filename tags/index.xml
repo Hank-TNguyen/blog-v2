@@ -7,7 +7,37 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>hanknguyen {year}</copyright>
-    <lastBuildDate>Sun, 02 Jul 2023 13:54:43 -0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 09 Oct 2023 15:52:20 -0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>avaiability</title>
+      <link>/tags/avaiability.html</link>
+      <pubDate>Mon, 09 Oct 2023 15:52:20 -0700</pubDate>
+      
+      <guid>/tags/avaiability.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>loadbalancing</title>
+      <link>/tags/loadbalancing.html</link>
+      <pubDate>Mon, 09 Oct 2023 15:52:20 -0700</pubDate>
+      
+      <guid>/tags/loadbalancing.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>microservice</title>
+      <link>/tags/microservice.html</link>
+      <pubDate>Mon, 09 Oct 2023 15:52:20 -0700</pubDate>
+      
+      <guid>/tags/microservice.html</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>backend</title>
       <link>/tags/backend.html</link>

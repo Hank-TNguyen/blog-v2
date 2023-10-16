@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Use Client Load Balancing to avoid Single Points of Failure :: hanknguyen</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Service Availability and Single Point of Failure Earlier this year, my boss asked me to evaluate blast radius of outages and if there were single point of failures in our workflow. I found for my service, both outbound and inbound requests, every interaction with other services is a single point of failure. The standard term in micro-service world is Inter-Process Communication (IPC), but my team doesn&amp;rsquo;t adopt the term nor care for other standard terms." />
+<meta name="keywords" content="microservice, loadbalancing, avaiability" />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="../posts/client-load-balance.html" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-746FE3Q60E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-746FE3Q60E', { 'anonymize_ip': false });
+}
+</script>
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="../styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="../img/theme-colors/green.png">
+  <link rel="apple-touch-icon" href="../img/theme-colors/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Use Client Load Balancing to avoid Single Points of Failure">
+<meta property="og:description" content="Service Availability and Single Point of Failure Earlier this year, my boss asked me to evaluate blast radius of outages and if there were single point of failures in our workflow. I found for my service, both outbound and inbound requests, every interaction with other services is a single point of failure. The standard term in micro-service world is Inter-Process Communication (IPC), but my team doesn&amp;rsquo;t adopt the term nor care for other standard terms." />
+<meta property="og:url" content="/posts/client-load-balance.html" />
+<meta property="og:site_name" content="hanknguyen" />
+
+  
+  
+  <meta property="og:image" content="/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2023-10-09 15:52:20 -0700 PDT" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="green">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+    <div class="header__inner">
+      <div class="header__logo">
+        <a href="../">
+    <div class="logo">
+      mBlog
+    </div>
+  </a>
+  
+      </div>
+      
+      
+    </div>
+    
+  </header>
+  
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="../posts/client-load-balance.html">Use Client Load Balancing to avoid Single Points of Failure</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2023-10-09</time><span class="post-author">hanknguyen</span><span class="post-reading-time">7 min read (1319 words)</span></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="../tags/microservice/">microservice</a>&nbsp;
+      
+      #<a href="../tags/loadbalancing/">loadbalancing</a>&nbsp;
+      
+      #<a href="../tags/avaiability/">avaiability</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="service-availability-and-single-point-of-failure">Service Availability and Single Point of Failure<a href="#service-availability-and-single-point-of-failure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Earlier this year, my boss asked me to evaluate blast radius of outages and if there were single point of failures in our workflow. I found for my service, both outbound and inbound requests, every interaction with other services is a single point of failure. The standard term in micro-service world is Inter-Process Communication (IPC), but my team doesn&rsquo;t adopt the term nor care for other standard terms. Sometimes I feel like my team is somewhat out of touch with the rest of the world, but then again, I think my whole company is somewhat like that. That, however, is not the topic for this post.</p>
+<h2 id="terminologies">Terminologies<a href="#terminologies" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="single-point-of-failure">Single point of failure<a href="#single-point-of-failure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<details>
+    <summary>Definition of A single point of failure</summary>
+    <p>A Single Point of Failure (SPOF) is a critical element within a system or network, and if it experiences an issue or failure, it can lead to system breakdown. This failure can disrupt the entire operation or functionality of the system, often causing system downtime or loss of critical functions. Mitigating the risk of SPOFs is crucial for maintaining the reliability and continuity of systems and infrastructure. Strategies like redundancy and failover mechanisms are commonly employed to address and minimize the impact of SPOFs, ensuring that essential services or processes can continue even in the presence of potential failure points.</p>
+</details>
+<p>That&rsquo;s the definition from ChatGPT. Our definition is more loose and hand-wavy. SPOF is a component which failed, it would disrupt the scenario in concern. Roughly speaking, there&rsquo;s no failover for the SPOF. A common pattern we have for IPC is to have a load balancer in front of a cluster of servers. Our service would target this load balancer, in our case an Azure Traffic Manager, when calling other services. This is also true for other services calling our service. In this case, while if a single server host goes down, the load balancer would take this host out of rotation. This is all for stateless services, but for stateful services, we need to worry about persisting and retrieving session data. Let&rsquo;s shelf this topic for now. With this pattern, while a single server is not, the load balancer is self is a SPOF. If the load balancer goes down, the whole cluster is inaccessible, there&rsquo;s no failover and the scenario is disrupted.</p>
+<p>This seems inevitable for server load balancing. That is, from the client point of view, it wholly delegates the balancing task to another service, the load balancer.</p>
+<p><img src="../20231013170530.png" alt="Server side load balancing"></p>
+<h3 id="blast-radisus">Blast radisus<a href="#blast-radisus" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<details>
+    <summary>Definition of Blast Radius</summary>
+    <p>The term "blast radius" refers to the potential impact or extent of damage that can occur as a result of a security breach, system failure, or other adverse events within a network or system. It is often used in the context of cybersecurity and risk assessment to describe how far-reaching the consequences of a particular incident could be.</p>
+</details>
+<p>Again, that might be formal definition. For us, it&rsquo;s the impact of an outage. For example, if a service is down, how many other services or regions would be affected. For example, our service is global, if our partner service goes down in a region, how would we contain the impact to be within the region?</p>
+<p>With server load balancing, this problem seems trivial. Assume that we can detect a problem through, for example, interval health check, then we can take the unhealthy hosts out of rotations. The blast radius will be contained within the problematic hosts. So far we only discuss availability aspect, one could further argue on data integrity or service reliability. Let&rsquo;s shelf those for now.</p>
+<hr>
+<p>Unlike in academia, people in a meeting often forego the basics, and assume knowledge that others might not have. At some companies, where design reviews are taken seriously (you can tell my opinion on mine), people would often ask for clarification, design docs and guidance are written with standards.</p>
+<blockquote>
+<p>&ldquo;Can we assume that audience know what micro-service is?&rdquo;</p>
+</blockquote>
+<h2 id="for-your-boss-ask-what-was-the-outcome">For your boss&rsquo; ask, what was the outcome?<a href="#for-your-boss-ask-what-was-the-outcome" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>My team engineering culture has room (lots) for improvement. From my observations, it could be a number of reasons, budget constraint that led to overwork, subpar work quality to meet deadline. One major one, I dare not input, is mismanagement. The larger organization seems disconnected, guidance are generic and become obsolete quickly, initiatives ended up half-baked. This effort is case in point.</p>
+<p>As I pointed out earlier, we identified the issues. However, this is a problem for every other services. Let&rsquo;s wait for them to fix it, or come up with a solution. That was the last update I have for this initiative, we then shelf this discussion. Perhaps, we can revisit this in the future where it has some business impact.</p>
+<p>Enough for the rant and negativity, I promise the next section would be more positive.</p>
+<h2 id="the-solution">The solution<a href="#the-solution" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="my-companys-approach">My company&rsquo;s approach<a href="#my-companys-approach" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>One of the partner service team came up with a pattern for request hedging. It&rsquo;s an addition to the server load balancing pattern. Instead of sending one request to the global traffic manager endpoint, their service sends 2 requests to primary and secondary endpoints with some jitter in between. Once one respond came back, it would cancel the other pending request. The advantage for this solution is that the IPC client is still fairly simple to implement, latency is kept at the lesser of the 2 requests. Most importantly, we solve the SPOF as indicated above. The cost is that we will always have 1 redudant request, and complexity added into traffic distribution pattern. The latter might be problematic if services are not scaled sufficiently in different regions. Also, why would service A need to know about service B&rsquo;s internal capacity planning?</p>
+<p><img src="../20231013171459.png" alt="Request hedging"></p>
+<h3 id="lucky-find-on-the-internet">Lucky find on the internet<a href="#lucky-find-on-the-internet" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>One day I was looking at techblog articles and found <a href="https://netflixtechblog.com/zero-configuration-service-mesh-with-on-demand-cluster-discovery-ac6483b52a51">Zero Configuration Service Mesh With On Demand Cluster Discovery</a>. Admittedly, I don&rsquo;t have the persuasion skill to one day convince my bosses that this is worth adopting, maybe if we improve our engineering culture, but that&rsquo;s a topic for another day.</p>
+<p>The article is on how netflix adopted <a href="https://www.envoyproxy.io/">Envoy</a>, an OSS project created by Lyft. At the center of the solution is client load balancing. The main addition they had is the ability to on-demand discover the cluster of hosts, which does not require initial configurations. Of course, this comes with some limitation, but they all have an easy solution.</p>
+<p><img src="../20231016153620.png" alt="Client load balancing"></p>
+<p>Let&rsquo;s discuss the relevancy for this post. This indeed solves the SPOF, the &ldquo;balancing&rdquo; act is determined by a Service Discovery service, and the result of this computation is then loaded on the IPC client. If the Service Discovery service is down, the client can still work with the LKG (last known good) result.</p>
+<p>Compared with the request hedging pattern above, we only need to make 1 request. The burden of knowing where to best route traffic is on the Service Discovery side. Service B can send feedback to Service Discovery so that complex balancing based on capacity planning, current service health are considered.</p>
+<p>One more addition that is not yet mentioned on the netflix article is how would we manage routing by proximity. How would service A send a request to an instance of service B with the closest proximity, either in terms of network hop or physical instance. I think this work can be done by either maintaining a graph on the service discover side, or on the client side depending on the contract for the IPC client. I have a feeling, it&rsquo;s easier if it&rsquo;s managed outside of the client, if you know better, send me a text.</p>
+<p>It&rsquo;s a long way to adopt this architecture, but partially implement the pieces or framework is also valuable and a good investment for us. I understand this level of optimization is great to discuss but does not have great value/effort ratio in most business cases. But again, that&rsquo;s what this platform is for, right?</p>
+
+      </div></div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+    <div class="footer__inner">
+      
+        <div class="copyright copyright--user">
+            <span class="copyright">
+                hanknguyen 2023
+            </span>
+      
+        </div>
+    </div>
+  </footer>
+  
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="../bundle.min.js"></script>
+  
+  
+  
+
+  
+  
+</div>
+
+</body>
+</html>

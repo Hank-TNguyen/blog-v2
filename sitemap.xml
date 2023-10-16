@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>/tags/avaiability.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/loadbalancing.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags/microservice.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/posts.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/tags.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/posts/client-load-balance.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
     <loc>/posts/read-optimized-service.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
@@ -17,22 +38,13 @@
     <loc>/tags/distributedservice.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
-    <loc>/</loc>
-    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
-  </url><url>
     <loc>/tags/highqps.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/tags/hugo.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
-    <loc>/posts.html</loc>
-    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
-  </url><url>
     <loc>/tags/staticsite.html</loc>
-    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
-  </url><url>
-    <loc>/tags.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/categories.html</loc>

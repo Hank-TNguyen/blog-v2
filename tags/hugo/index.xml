@@ -75,8 +75,7 @@ ChatGPT: &amp;ldquo;oh jeez, please do it yourself, I&amp;rsquo;m not a web deve
 &lt;p&gt;That was simple enough. Let&amp;rsquo;s summarize what we did. We created a framework that generates static HTML pages, and then host them on Github page. We can leverage ChatGPT to do the hardwork, writing most of the code, but still I&amp;rsquo;m not too worried about my job security, I need to tell ChatGPT what to write. It turns out to be a pretty good, knowledgeable intern in this setup.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../overall.png&#34; alt=&#34;Overall/&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Without ChatGPT, this framework would probably take me a few days to materialize. I did all this in an evening and now spend most of the time on the content. As per the risk of AI taking over our jobs discussion, I think it is somewhat overblown. I think we will be fine, we just need to adapt and learn new skills. It increases productivity in certain setups for sure, but when the context gets more complex, I have yet to find it too useful.&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
-</content>
+&lt;!-- basic --&gt;</content>
     </item>
     
   </channel>
