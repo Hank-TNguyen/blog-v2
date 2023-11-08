@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   
-    <title>A simple implementation of a static-site generator :: hanknguyen</title>
+    <title>A Simple Static Site Generateor: Writing Made Easy! :: hanknguyen</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="The framework of this blog TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is Showcase | Hugo (gohugo.io). For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.
-The idea I want something lightweight, something that I set up once and then I can focus on the writing." />
+<meta name="description" content="A Simple Static Site Generator: Writing Made Easy! In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I&amp;rsquo;ll walk you through my journey of implementing a straightforward framework that doesn&amp;rsquo;t require coding expertise.
+The Lightbulb Moment My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs." />
 <meta name="keywords" content=", " />
 
   <meta name="robots" content="noodp" />
@@ -56,9 +56,9 @@ if (!doNotTrack) {
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="A simple implementation of a static-site generator">
-<meta property="og:description" content="The framework of this blog TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is Showcase | Hugo (gohugo.io). For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.
-The idea I want something lightweight, something that I set up once and then I can focus on the writing." />
+<meta property="og:title" content="A Simple Static Site Generateor: Writing Made Easy!">
+<meta property="og:description" content="A Simple Static Site Generator: Writing Made Easy! In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I&amp;rsquo;ll walk you through my journey of implementing a straightforward framework that doesn&amp;rsquo;t require coding expertise.
+The Lightbulb Moment My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs." />
 <meta property="og:url" content="/posts/blog-framework.html" />
 <meta property="og:site_name" content="hanknguyen" />
 
@@ -119,9 +119,9 @@ The idea I want something lightweight, something that I set up once and then I c
     
 <article class="post">
   <h1 class="post-title">
-    <a href="../posts/blog-framework.html">A simple implementation of a static-site generator</a>
+    <a href="../posts/blog-framework.html">A Simple Static Site Generateor: Writing Made Easy!</a>
   </h1>
-  <div class="post-meta"><time class="post-date">2023-07-02</time></div>
+  <div class="post-meta"><time class="post-date">2023-07-02</time><span class="post-reading-time">3 min read (515 words)</span></div>
 
   
     <span class="post-tags">
@@ -140,66 +140,35 @@ The idea I want something lightweight, something that I set up once and then I c
   
 
   <div class="post-content"><div>
-        <h1 id="the-framework-of-this-blog">The framework of this blog<a href="#the-framework-of-this-blog" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
-<p>TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is <a href="https://gohugo.io/showcase/">Showcase | Hugo (gohugo.io)</a>. For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.</p>
-<h2 id="the-idea">The idea<a href="#the-idea" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>I want something lightweight, something that I set up once and then I can focus on the writing. It might seem counter-intuitive at this point, shouldn&rsquo;t I just use an out-of-the-box solution like wordpress. Eventually it checks out most of the box, but it needs a backend server to run. Usually, it involves some money costs, that I didn&rsquo;t want to pay at the time. Okay, it can be free, but with a lot of tweaking.</p>
-<p>In retrospect, I didn&rsquo;t know about <a href="https://gohugo.io/showcase/">Showcase | Hugo (gohugo.io)</a>, which is a static site generator. It&rsquo;s a framework that generates a static website. I might have been reinventing the wheel, but what&rsquo;s the harm in it. I learned a whole bunch, it&rsquo;s a good experience.</p>
-<h3 id="the-stacks">The stacks<a href="#the-stacks" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>I will stick with free tools, and here are the assumptions:</p>
+        <h1 id="a-simple-static-site-generator-writing-made-easy">A Simple Static Site Generator: Writing Made Easy!<a href="#a-simple-static-site-generator-writing-made-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – <a href="https://gohugo.io/showcase/">Hugo</a>. In this blog, I&rsquo;ll walk you through my journey of implementing a straightforward framework that doesn&rsquo;t require coding expertise.</p>
+<h2 id="the-lightbulb-moment">The Lightbulb Moment<a href="#the-lightbulb-moment" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs. While WordPress does offer free options, they often come with complex setups. Little did I know about <a href="https://gohugo.io/showcase/">Hugo</a>, a static site generator that simplifies website creation. I may have been reinventing the wheel, but the learning experience was invaluable.</p>
+<h3 id="my-toolbox">My Toolbox<a href="#my-toolbox" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I decided to stick with free tools for my project, making the following assumptions:</p>
 <ol>
-<li>Github page is free.</li>
-<li>I have ChatGpt plus subscription.</li>
-<li>I know the frontend stacks (HTML, CSS, JS).</li>
-<li>I have an existing brand <a href="https://baophotos.ca/">BAO Photography</a></li>
+<li>GitHub Pages are free.</li>
+<li>I have a ChatGPT Plus subscription.</li>
+<li>I know my way around frontend technologies (HTML, CSS, JS).</li>
+<li>I have an established brand - <a href="https://baophotos.ca/">BAO Photography</a>.</li>
 </ol>
-<p><em>Other JS frameworks, like React, Angular are a little excessive for my purpose.</em></p>
-<hr>
-<p><strong>So, let&rsquo;s create a framework that generates static HTML pages, and then host them on Github page. Point the subdomain of the existing brand to the github page, and we can leverage ChatGPT to do the hardwork, writing most of the code.</strong></p>
-<hr>
-<blockquote>
-<p>The excerpt in the headline might be a little click-baity. One does not need to code, but knowing where which component should be is vital.</p>
-</blockquote>
-<h3 id="the-setup">The setup<a href="#the-setup" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>I will provide step-by-step instructions, following-along is not a must or recommended 😆 My friends call me a troll sometimes, sorry. The reason is that creating your own framework is not the purpose of this post. Let&rsquo;s just use Hugo, or other out-of-the-box solutions, if you need and focus on the writing here.</p>
-<p>The step-by-step instructions followed is, admitedly, not good. There might be gap, and assumed knowledge.</p>
-<h4 id="1-lets-start-with-the-basic-html-page">1. Let&rsquo;s start with the basic HTML page<a href="#1-lets-start-with-the-basic-html-page" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>Ask ChatGPT or your favorite LLM to generate a basic HTML page with a simple prompt:</p>
-<blockquote>
-<p>you: &ldquo;Act as a software engineer, write a basic HTML page with title ABC and a tagline XYZ.&rdquo;
-ChatGPT: &ldquo;oh jeez, please do it yourself, I&rsquo;m not a web developer.&rdquo;</p>
-<p>&hellip;.</p>
-<p>ChatGPT: &ldquo;okay, I&rsquo;ll try my best, but don&rsquo;t expect too much.&rdquo;</p>
-<p>&hellip;.</p>
-<p>ChatGPT: &ldquo;here you go, I&rsquo;m done.&rdquo;</p>
-</blockquote>
-<p>Sorry for the unamusing joke there, but I trust your LLM can do it.</p>
-<p><img src="../chatgpt-example.png" alt="chat session"></p>
-<p>At this step, you can also add a stylesheet, and other components on the HTML page. For the blog, I added a container for the list of blog posts.</p>
-<h4 id="2-how-do-we-present-a-blog-post">2. How do we present a blog post?<a href="#2-how-do-we-present-a-blog-post" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>Wordpress has a notion of post and page. I will do something similar, let&rsquo;s present a blog post as an html page, and give the summary as an entry in the container above.</p>
-<p>I like markdown, and had experience with it. So, I will use markdown to write the blog post. I then I will ask ChatGPT to give me a script, using Python, to convert the markdown to HTML. The end result is something like this <a href="https://github.com/Hank-TNguyen/blog/blob/main/markdown-to-html.py">blog/markdown-to-html.py at main - Hank-TNguyen/blog (github.com)</a> after a lot of iterations. It does a couple of extra things. It will compile the list of blog posts, and generate a json file that contains the metadata of the posts.</p>
-<p><img src="../post-metadata.png" alt="Post metadata"></p>
-<h4 id="3-lets-display-what-we-have-on-the-main-page">3. Let&rsquo;s display what we have on the main page<a href="#3-lets-display-what-we-have-on-the-main-page" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>We need to populate the container of the blog post in the main page. The json containing the metadata earlier will be used to populate the container. This needs to happen &ldquo;relatively&rdquo; dynamically when the client loads the page. Each of the entry for a post in this container will provide a link to the actual post. What I ended up doing is to use an iframe in the same main page to display the post. When you see this page, you are actually in an iframe, and the main page is in the background. All posts are loaded at startup time. This is not a worry, I know this is a one-person blog, I figure I will probably have a handful of posts. This setup will probably still be fast.</p>
-<blockquote>
-<p>&ldquo;relatively&rdquo; is in quotes, because all assets are static, dynamic is in the sense that we load the json file and populate the html container.</p>
-</blockquote>
-<h4 id="4-lets-write-the-first-post">4. Let&rsquo;s write the first post<a href="#4-lets-write-the-first-post" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>As I mentioned, I will use markdown. I asked ChatGPT to give me a powershell script to create a file with a template, a really fancy one I create 😆.</p>
-<p><img src="../markdown-snippet.png" alt="markdownsnippet"></p>
-<p>The script will create a file with the name of the post, it follows a simple rule, get other posts and increment the number. The content is the template above. The script ended up looking like this <a href="https://github.com/Hank-TNguyen/blog/blob/main/WritePost.ps1">blog/WritePost.ps1 at main - Hank-TNguyen/blog (github.com)</a>.</p>
-<h4 id="5-execute-scripts-and-publish">5. Execute scripts and publish<a href="#5-execute-scripts-and-publish" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>If you check out the github repository <a href="https://github.com/Hank-TNguyen/blog/tree/main">Hank-TNguyen/blog: Blog (github.com)</a>, you can test this locally. Following are the commands I execute when writing a new post</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>.\WritePost.ps1 ;
-</span></span><span style="display:flex;"><span>python markdown-to-html.py;
-</span></span><span style="display:flex;"><span>git add . ;
-</span></span><span style="display:flex;"><span>git push ;
-</span></span></code></pre></div><h2 id="summary">Summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>That was simple enough. Let&rsquo;s summarize what we did. We created a framework that generates static HTML pages, and then host them on Github page. We can leverage ChatGPT to do the hardwork, writing most of the code, but still I&rsquo;m not too worried about my job security, I need to tell ChatGPT what to write. It turns out to be a pretty good, knowledgeable intern in this setup.</p>
+<h3 id="lets-get-started">Let&rsquo;s Get Started<a href="#lets-get-started" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>My approach was to create a framework that generates static HTML pages and host them on GitHub Pages. I would also leverage ChatGPT to do most of the coding heavy lifting. Don&rsquo;t worry; you don&rsquo;t need to be a coding wizard to follow along.</p>
+<h4 id="step-1-creating-a-basic-html-page">Step 1: Creating a Basic HTML Page<a href="#step-1-creating-a-basic-html-page" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>You can start by asking ChatGPT to generate a basic HTML page with a title and a tagline. Feel free to add your own styles and components. For my blog, I included a container for the list of blog posts.</p>
+<h4 id="step-2-presenting-blog-posts">Step 2: Presenting Blog Posts<a href="#step-2-presenting-blog-posts" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>I decided to present each blog post as an HTML page. I wrote my blog posts in Markdown and used a Python script generated with ChatGPT to convert Markdown to HTML. This script also compiled the list of blog posts and generated a JSON file with post metadata.</p>
+<h4 id="step-3-displaying-posts">Step 3: Displaying Posts<a href="#step-3-displaying-posts" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>To display my blog posts, I populated the container on the main page using the JSON metadata. This process happens relatively dynamically, meaning we load the JSON file and populate the HTML container when the client loads the page. To achieve this, I used iframes to display the posts.</p>
+<h4 id="step-4-writing-blog-posts">Step 4: Writing Blog Posts<a href="#step-4-writing-blog-posts" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>I created a Powershell script that generates a new blog post file with a predefined template. The script automatically names the file and increments the post number.</p>
+<h4 id="step-5-execute-and-publish">Step 5: Execute and Publish<a href="#step-5-execute-and-publish" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>With everything set up, I executed my scripts and pushed the changes to my GitHub repository.</p>
+<h2 id="in-a-nutshell">In a Nutshell<a href="#in-a-nutshell" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This simple framework allowed me to generate static HTML pages and host them on GitHub Pages effortlessly. ChatGPT played a crucial role in automating various tasks, making my life easier. While AI is undoubtedly a powerful tool, I believe that the human touch and creativity will always have a place. It&rsquo;s all about adapting and learning new skills to stay ahead in an ever-changing landscape.</p>
 <p><img src="../overall.png" alt="Overall/"></p>
-<p>Without ChatGPT, this framework would probably take me a few days to materialize. I did all this in an evening and now spend most of the time on the content. As per the risk of AI taking over our jobs discussion, I think it is somewhat overblown. I think we will be fine, we just need to adapt and learn new skills. It increases productivity in certain setups for sure, but when the context gets more complex, I have yet to find it too useful.</p>
-<!-- basic -->
+<p>So, why spend days on complex setups when you can create your website in an evening? Get creative, write, and let AI do the heavy lifting – it&rsquo;s a win-win situation! 😄</p>
+
       </div></div>
 
   

@@ -9,196 +9,166 @@
     <copyright>hanknguyen {year}</copyright>
     <lastBuildDate>Mon, 09 Oct 2023 15:52:20 -0700</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Use Client Load Balancing to avoid Single Points of Failure</title>
+      <title>Using Client Load Balancing to Boost Service Availability</title>
       <link>/posts/client-load-balance.html</link>
       <pubDate>Mon, 09 Oct 2023 15:52:20 -0700</pubDate>
       
       <guid>/posts/client-load-balance.html</guid>
-      <description>Service Availability and Single Point of Failure Earlier this year, my boss asked me to evaluate blast radius of outages and if there were single point of failures in our workflow. I found for my service, both outbound and inbound requests, every interaction with other services is a single point of failure. The standard term in micro-service world is Inter-Process Communication (IPC), but my team doesn&amp;rsquo;t adopt the term nor care for other standard terms.</description>
-      <content>&lt;h1 id=&#34;service-availability-and-single-point-of-failure&#34;&gt;Service Availability and Single Point of Failure&lt;/h1&gt;
-&lt;p&gt;Earlier this year, my boss asked me to evaluate blast radius of outages and if there were single point of failures in our workflow. I found for my service, both outbound and inbound requests, every interaction with other services is a single point of failure. The standard term in micro-service world is Inter-Process Communication (IPC), but my team doesn&amp;rsquo;t adopt the term nor care for other standard terms. Sometimes I feel like my team is somewhat out of touch with the rest of the world, but then again, I think my whole company is somewhat like that. That, however, is not the topic for this post.&lt;/p&gt;
-&lt;h2 id=&#34;terminologies&#34;&gt;Terminologies&lt;/h2&gt;
-&lt;h3 id=&#34;single-point-of-failure&#34;&gt;Single point of failure&lt;/h3&gt;
+      <description>Elevating Service Availability and Banishing Single Points of Failure Earlier this year, my boss entrusted me with the task of assessing the impact of outages and identifying any potential single points of failure in our workflow. What I discovered was that every interaction my service had with other services, whether outbound or inbound, constituted a single point of failure. While the micro-service world often uses the term Inter-Process Communication (IPC) to describe this, my team prefers not to be bound by such jargon.</description>
+      <content>&lt;h1 id=&#34;elevating-service-availability-and-banishing-single-points-of-failure&#34;&gt;Elevating Service Availability and Banishing Single Points of Failure&lt;/h1&gt;
+&lt;p&gt;Earlier this year, my boss entrusted me with the task of assessing the impact of outages and identifying any potential single points of failure in our workflow. What I discovered was that every interaction my service had with other services, whether outbound or inbound, constituted a single point of failure. While the micro-service world often uses the term Inter-Process Communication (IPC) to describe this, my team prefers not to be bound by such jargon. Sometimes, it feels like my team operates in its own orbit, but that&amp;rsquo;s not the focus of this post.&lt;/p&gt;
+&lt;h2 id=&#34;unpacking-the-terminology&#34;&gt;Unpacking the Terminology&lt;/h2&gt;
+&lt;h3 id=&#34;single-point-of-failure&#34;&gt;Single Point of Failure&lt;/h3&gt;
 &lt;details&gt;
-    &lt;summary&gt;Definition of A single point of failure&lt;/summary&gt;
-    &lt;p&gt;A Single Point of Failure (SPOF) is a critical element within a system or network, and if it experiences an issue or failure, it can lead to system breakdown. This failure can disrupt the entire operation or functionality of the system, often causing system downtime or loss of critical functions. Mitigating the risk of SPOFs is crucial for maintaining the reliability and continuity of systems and infrastructure. Strategies like redundancy and failover mechanisms are commonly employed to address and minimize the impact of SPOFs, ensuring that essential services or processes can continue even in the presence of potential failure points.&lt;/p&gt;
+    &lt;summary&gt;Defining a Single Point of Failure (SPOF)&lt;/summary&gt;
+    &lt;p&gt;A Single Point of Failure (SPOF) is a critical component within a system or network. If it encounters an issue or failure, it can trigger a system breakdown, disrupting its operation and functionality. This often results in system downtime or a loss of critical functions. To mitigate the risk of SPOFs, it&#39;s vital to employ strategies like redundancy and failover mechanisms. These approaches ensure that essential services or processes can continue even in the face of potential failure points.&lt;/p&gt;
 &lt;/details&gt;
-&lt;p&gt;That&amp;rsquo;s the definition from ChatGPT. Our definition is more loose and hand-wavy. SPOF is a component which failed, it would disrupt the scenario in concern. Roughly speaking, there&amp;rsquo;s no failover for the SPOF. A common pattern we have for IPC is to have a load balancer in front of a cluster of servers. Our service would target this load balancer, in our case an Azure Traffic Manager, when calling other services. This is also true for other services calling our service. In this case, while if a single server host goes down, the load balancer would take this host out of rotation. This is all for stateless services, but for stateful services, we need to worry about persisting and retrieving session data. Let&amp;rsquo;s shelf this topic for now. With this pattern, while a single server is not, the load balancer is self is a SPOF. If the load balancer goes down, the whole cluster is inaccessible, there&amp;rsquo;s no failover and the scenario is disrupted.&lt;/p&gt;
-&lt;p&gt;This seems inevitable for server load balancing. That is, from the client point of view, it wholly delegates the balancing task to another service, the load balancer.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./20231013170530.png&#34; alt=&#34;Server side load balancing&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;blast-radisus&#34;&gt;Blast radisus&lt;/h3&gt;
+&lt;p&gt;That&amp;rsquo;s the definition from ChatGPT. Our interpretation is more laid-back. To us, a SPOF is any element whose failure disrupts the scenario at hand. In simpler terms, there&amp;rsquo;s no backup plan for the SPOF. When it comes to IPC, our common approach involves placing a load balancer in front of a server cluster. Our service directs requests to this load balancer, which, in our case, is an Azure Traffic Manager when interacting with other services. The same applies to other services calling our own. In this setup, if a single server host falters, the load balancer removes it from rotation. For stateless services, this mechanism works seamlessly. However, for stateful services, concerns arise about persisting and retrieving session data. Let&amp;rsquo;s set this topic aside for now. With our pattern, the server isn&amp;rsquo;t the SPOF, but the load balancer itself is. If the load balancer fails, the entire cluster becomes unreachable, with no failover, and the scenario is disrupted.&lt;/p&gt;
+&lt;p&gt;This situation is somewhat inevitable with server load balancing. From the client&amp;rsquo;s perspective, it entrusts the balancing task to another service—the load balancer.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./20231013170530.png&#34; alt=&#34;Server-Side Load Balancing&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;blast-radius&#34;&gt;Blast Radius&lt;/h3&gt;
 &lt;details&gt;
-    &lt;summary&gt;Definition of Blast Radius&lt;/summary&gt;
-    &lt;p&gt;The term &#34;blast radius&#34; refers to the potential impact or extent of damage that can occur as a result of a security breach, system failure, or other adverse events within a network or system. It is often used in the context of cybersecurity and risk assessment to describe how far-reaching the consequences of a particular incident could be.&lt;/p&gt;
+    &lt;summary&gt;Defining Blast Radius&lt;/summary&gt;
+    &lt;p&gt;The term &#34;blast radius&#34; refers to the potential impact or extent of damage that can result from a security breach, system failure, or other adverse events within a network or system. It&#39;s often used in the context of cybersecurity and risk assessment to describe how far-reaching the consequences of a particular incident could be.&lt;/p&gt;
 &lt;/details&gt;
-&lt;p&gt;Again, that might be formal definition. For us, it&amp;rsquo;s the impact of an outage. For example, if a service is down, how many other services or regions would be affected. For example, our service is global, if our partner service goes down in a region, how would we contain the impact to be within the region?&lt;/p&gt;
-&lt;p&gt;With server load balancing, this problem seems trivial. Assume that we can detect a problem through, for example, interval health check, then we can take the unhealthy hosts out of rotations. The blast radius will be contained within the problematic hosts. So far we only discuss availability aspect, one could further argue on data integrity or service reliability. Let&amp;rsquo;s shelf those for now.&lt;/p&gt;
+&lt;p&gt;Again, this might be the formal definition, but for us, it&amp;rsquo;s all about understanding the impact of an outage. For example, if a service goes down, we want to know how many other services or regions would be affected. Since our service operates globally, containing the impact within a specific region if our partner service faces an issue is crucial.&lt;/p&gt;
+&lt;p&gt;With server load balancing, solving this problem seems straightforward. Suppose we can detect issues through, for instance, interval health checks. In that case, we can swiftly remove unhealthy hosts from rotation, ensuring that the blast radius remains limited to the problematic hosts. So far, we&amp;rsquo;ve only discussed availability; additional considerations like data integrity or service reliability are topics for another day.&lt;/p&gt;
 &lt;hr&gt;
-&lt;p&gt;Unlike in academia, people in a meeting often forego the basics, and assume knowledge that others might not have. At some companies, where design reviews are taken seriously (you can tell my opinion on mine), people would often ask for clarification, design docs and guidance are written with standards.&lt;/p&gt;
+&lt;p&gt;In contrast to academia, meetings often skip the basics and assume everyone shares the same knowledge. In some companies where design reviews are taken seriously (you can probably guess my opinion on my own organization), people are encouraged to ask for clarification. Design documents and guidelines are crafted with clear standards.&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;Can we assume that audience know what micro-service is?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Can we assume that the audience knows what a micro-service is?&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;for-your-boss-ask-what-was-the-outcome&#34;&gt;For your boss&amp;rsquo; ask, what was the outcome?&lt;/h2&gt;
-&lt;p&gt;My team engineering culture has room (lots) for improvement. From my observations, it could be a number of reasons, budget constraint that led to overwork, subpar work quality to meet deadline. One major one, I dare not input, is mismanagement. The larger organization seems disconnected, guidance are generic and become obsolete quickly, initiatives ended up half-baked. This effort is case in point.&lt;/p&gt;
-&lt;p&gt;As I pointed out earlier, we identified the issues. However, this is a problem for every other services. Let&amp;rsquo;s wait for them to fix it, or come up with a solution. That was the last update I have for this initiative, we then shelf this discussion. Perhaps, we can revisit this in the future where it has some business impact.&lt;/p&gt;
-&lt;p&gt;Enough for the rant and negativity, I promise the next section would be more positive.&lt;/p&gt;
-&lt;h2 id=&#34;the-solution&#34;&gt;The solution&lt;/h2&gt;
-&lt;h3 id=&#34;my-companys-approach&#34;&gt;My company&amp;rsquo;s approach&lt;/h3&gt;
-&lt;p&gt;One of the partner service team came up with a pattern for request hedging. It&amp;rsquo;s an addition to the server load balancing pattern. Instead of sending one request to the global traffic manager endpoint, their service sends 2 requests to primary and secondary endpoints with some jitter in between. Once one respond came back, it would cancel the other pending request. The advantage for this solution is that the IPC client is still fairly simple to implement, latency is kept at the lesser of the 2 requests. Most importantly, we solve the SPOF as indicated above. The cost is that we will always have 1 redudant request, and complexity added into traffic distribution pattern. The latter might be problematic if services are not scaled sufficiently in different regions. Also, why would service A need to know about service B&amp;rsquo;s internal capacity planning?&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./20231013171459.png&#34; alt=&#34;Request hedging&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;lucky-find-on-the-internet&#34;&gt;Lucky find on the internet&lt;/h3&gt;
-&lt;p&gt;One day I was looking at techblog articles and found &lt;a href=&#34;https://netflixtechblog.com/zero-configuration-service-mesh-with-on-demand-cluster-discovery-ac6483b52a51&#34;&gt;Zero Configuration Service Mesh With On Demand Cluster Discovery&lt;/a&gt;. Admittedly, I don&amp;rsquo;t have the persuasion skill to one day convince my bosses that this is worth adopting, maybe if we improve our engineering culture, but that&amp;rsquo;s a topic for another day.&lt;/p&gt;
-&lt;p&gt;The article is on how netflix adopted &lt;a href=&#34;https://www.envoyproxy.io/&#34;&gt;Envoy&lt;/a&gt;, an OSS project created by Lyft. At the center of the solution is client load balancing. The main addition they had is the ability to on-demand discover the cluster of hosts, which does not require initial configurations. Of course, this comes with some limitation, but they all have an easy solution.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./20231016153620.png&#34; alt=&#34;Client load balancing&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s discuss the relevancy for this post. This indeed solves the SPOF, the &amp;ldquo;balancing&amp;rdquo; act is determined by a Service Discovery service, and the result of this computation is then loaded on the IPC client. If the Service Discovery service is down, the client can still work with the LKG (last known good) result.&lt;/p&gt;
-&lt;p&gt;Compared with the request hedging pattern above, we only need to make 1 request. The burden of knowing where to best route traffic is on the Service Discovery side. Service B can send feedback to Service Discovery so that complex balancing based on capacity planning, current service health are considered.&lt;/p&gt;
-&lt;p&gt;One more addition that is not yet mentioned on the netflix article is how would we manage routing by proximity. How would service A send a request to an instance of service B with the closest proximity, either in terms of network hop or physical instance. I think this work can be done by either maintaining a graph on the service discover side, or on the client side depending on the contract for the IPC client. I have a feeling, it&amp;rsquo;s easier if it&amp;rsquo;s managed outside of the client, if you know better, send me a text.&lt;/p&gt;
-&lt;p&gt;It&amp;rsquo;s a long way to adopt this architecture, but partially implement the pieces or framework is also valuable and a good investment for us. I understand this level of optimization is great to discuss but does not have great value/effort ratio in most business cases. But again, that&amp;rsquo;s what this platform is for, right?&lt;/p&gt;
+&lt;h2 id=&#34;so-what-was-the-outcome-of-your-bosss-inquiry&#34;&gt;So, What Was the Outcome of Your Boss&amp;rsquo;s Inquiry?&lt;/h2&gt;
+&lt;p&gt;My team&amp;rsquo;s engineering culture leaves room for improvement. From my observations, several factors contribute to this, from budget constraints leading to overwork and subpar quality to meet deadlines. There&amp;rsquo;s a major concern that I hesitate to voice, which could be mismanagement. The larger organization often appears disjointed, with guidance quickly becoming outdated and initiatives ending up half-baked. This particular effort serves as a prime example.&lt;/p&gt;
+&lt;p&gt;As I mentioned earlier, we&amp;rsquo;ve identified the issues. However, this isn&amp;rsquo;t just our problem; it affects every other service too. For now, we&amp;rsquo;re opting to let them address it or devise a solution. That was the latest update I have on this initiative, and we&amp;rsquo;ve temporarily shelved the discussion. Perhaps we can revisit it in the future when it holds more significant business implications.&lt;/p&gt;
+&lt;p&gt;Enough of the rant and negativity; I promise the next section will be more positive.&lt;/p&gt;
+&lt;h2 id=&#34;the-solution&#34;&gt;The Solution&lt;/h2&gt;
+&lt;h3 id=&#34;our-companys-approach&#34;&gt;Our Company&amp;rsquo;s Approach&lt;/h3&gt;
+&lt;p&gt;One of the partner service teams came up with a pattern for request hedging, an addition to the server load balancing approach. Instead of sending a single request to the global traffic manager endpoint, their service sends two requests to primary and secondary endpoints, with some jitter in between. As soon as one response is received, it cancels the other pending request. This solution retains a relatively simple implementation for the IPC client, maintaining low latency by choosing the faster of the two requests. Most importantly, it addresses the SPOF issue mentioned earlier. However, it does introduce the cost of one redundant request and added complexity to the traffic distribution pattern. The latter could be problematic if services aren&amp;rsquo;t adequately scaled across different regions. Moreover, why should service A concern itself with service B&amp;rsquo;s internal capacity planning?&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./20231013171459.png&#34; alt=&#34;Request Hedging&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;a-lucky-discovery-on-the-internet&#34;&gt;A Lucky Discovery on the Internet&lt;/h3&gt;
+&lt;p&gt;One day, while perusing tech blog articles, I stumbled upon &lt;a href=&#34;https://netflixtechblog.com/zero-configuration-service-mesh-with-on-demand-cluster-discovery-ac6483b52a51&#34;&gt;Zero Configuration Service Mesh With On-Demand Cluster Discovery&lt;/a&gt;. Admittedly, I don&amp;rsquo;t possess the persuasive skills to convince my superiors that adopting this solution is worth the effort—perhaps if we enhance our engineering culture, but that&amp;rsquo;s a topic for another day.&lt;/p&gt;
+&lt;p&gt;The article details how Netflix embraced &lt;a href=&#34;https://www.envoyproxy.io/&#34;&gt;Envoy&lt;/a&gt;, an open-source project developed by Lyft. At the heart of their solution is client load balancing. Their main innovation is the ability to dynamically discover a host cluster, eliminating the need for initial configurations. Of course, there are limitations, but they all come with straightforward solutions.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./20231016153620.png&#34; alt=&#34;Client Load Balancing&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s discuss the relevance of this discovery for our post. This solution indeed banishes the SPOF issue. The &amp;ldquo;balancing&amp;rdquo; act is determined by a Service Discovery service, with the results loaded onto the IPC client. Even if the Service Discovery service encounters downtime, the client can still function using the last known good result.&lt;/p&gt;
+&lt;p&gt;Compared to the request hedging pattern mentioned earlier, this solution streamlines the process, requiring just one request. The responsibility of determining the best route for traffic lies with the Service Discovery side. Service B can provide feedback to the Service Discovery service, allowing complex balancing based on capacity planning and the current service&amp;rsquo;s health.&lt;/p&gt;
+&lt;p&gt;One aspect not covered in the Netflix article is how to manage routing by proximity. How can service A send a request to a service B instance that&amp;rsquo;s closest in proximity, be it in terms of network hops or physical location? This task could be handled by maintaining a graph on the service discovery side or on the client side, depending on the IPC client&amp;rsquo;s contract. I have a hunch that it&amp;rsquo;s easier to manage this outside the client, but if you have better insights, feel free to reach out.&lt;/p&gt;
+&lt;p&gt;The journey to adopting this architecture is long, but even implementing parts or a framework can be highly valuable and a worthwhile investment for us. I acknowledge that this level of optimization might be more of an intellectual exercise, offering limited value relative to the effort in most business cases. But then again, that&amp;rsquo;s what this platform is for, right?&lt;/p&gt;
 </content>
     </item>
     
     <item>
-      <title>A problem with a read optimized service</title>
-      <link>/posts/read-optimized-service.html</link>
-      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
-      
-      <guid>/posts/read-optimized-service.html</guid>
-      <description>Tradeoffs in the design of a read optimized service TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.
-Disclaimer: I might not know the context of the design decisions, they were made by the previous owners.</description>
-      <content>&lt;h1 id=&#34;tradeoffs-in-the-design-of-a-read-optimized-service&#34;&gt;Tradeoffs in the design of a read optimized service&lt;/h1&gt;
-&lt;p&gt;TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.&lt;/p&gt;
-&lt;p&gt;Disclaimer: I might not know the context of the design decisions, they were made by the previous owners. I am just sharing my thoughts on the tradeoffs.&lt;/p&gt;
-&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
-&lt;h3 id=&#34;where-am-i&#34;&gt;Where am I?&lt;/h3&gt;
-&lt;p&gt;As of today (Jun 30 23), I have joined my current team for 1.5 years. The team is quite different from others I have worked with so far. That is, we own services and components which are relatively sparse. In contrast, in my previous team, we have a system with multiple closely related microservices. Data flows in one direction, and upstream and downstream contracts are well defined. Work planning was easy, and collaboration is encouraged. With my current team&amp;rsquo;s ownership, it feels natural to silo team members into different areas of expertise. And so, we adopt this ownership model. This punishes collaboration with overhead costs to get familiar with other areas. This is not to say that collaboration is not encouraged, but it is not as easy as it was before. I wonder which settings is more common in the industry. I would love to hear your thoughts.&lt;/p&gt;
-&lt;h3 id=&#34;what-am-i-doing&#34;&gt;What am I doing?&lt;/h3&gt;
-&lt;p&gt;As part of this ownership model, I was assigned to work on a service. The previous owner left the company shortly after. He did his best to convey the duties and responsibilities, but I still think the transition could have been better planned, maybe a management problem. My boss was supportive, and didn&amp;rsquo;t push me too much. I did prefer to have a more hand-holding experience, but there&amp;rsquo;s merit in learning things through diving the code and reference the unstructured/halfbaked documents. One of the fortunate things is that the difficult part of this service is the scaling, and not business logic. The business logic is relatively simple, it&amp;rsquo;s a CRUD store! The scaling part is the interesting part, and it&amp;rsquo;s somewhat my bread and butter. I spent 2 years with the previous team working on scaling problems. I am still not the expert, but I did learn a lot through my mentor and I am grateful for that.&lt;/p&gt;
-&lt;h2 id=&#34;the-service&#34;&gt;The service&lt;/h2&gt;
-&lt;h3 id=&#34;purpose&#34;&gt;Purpose&lt;/h3&gt;
-&lt;p&gt;As aforementioned, it&amp;rsquo;s a CRUD store. I should probably stop at that without going too much into the business. By nature, it&amp;rsquo;s read-heavy, about 2000 query per second globally. The p99 latency on the service is typically sub 50ms.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./20230630171617.png&#34; alt=&#34;QPS&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;architecture&#34;&gt;Architecture&lt;/h3&gt;
-&lt;p&gt;I think that was quite impressive. There are a few design decisions that went into this distributed service system. I will go through them one by one.&lt;/p&gt;
-&lt;h4 id=&#34;regionally-deployment&#34;&gt;Regionally deployment&lt;/h4&gt;
-&lt;p&gt;There are x regions, and in each, there are y hosts. All hosts are behind a regional traffic manager based on performance.&lt;/p&gt;
-&lt;h4 id=&#34;underlying-persistent-storage&#34;&gt;Underlying persistent storage&lt;/h4&gt;
-&lt;p&gt;NoSql, globally replicated DB, but not sharded.&lt;/p&gt;
-&lt;h4 id=&#34;full-in-memory-cache&#34;&gt;Full In-memory cache&lt;/h4&gt;
-&lt;p&gt;Store a copy of the DB in-mem cache. Upon handling read requests, only query the cache, not the underlying datastore.&lt;/p&gt;
-&lt;h4 id=&#34;cache-invalidation&#34;&gt;Cache invalidation&lt;/h4&gt;
-&lt;ul&gt;
-&lt;li&gt;Upon handling write requests, also write a change record to another table.&lt;/li&gt;
-&lt;li&gt;For all hosts, periodically, read the change record table, query the main table and apply the changes to the in-mem cache.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;the-tradeoffs&#34;&gt;The tradeoffs&lt;/h2&gt;
-&lt;p&gt;With all that said, let&amp;rsquo;s dive into the challenges. I will write this part in the chronological order of the incidents my team dealed with throughout the years.&lt;/p&gt;
-&lt;h3 id=&#34;incident-1-high-cpu-usage&#34;&gt;Incident 1: High CPU usage&lt;/h3&gt;
-&lt;p&gt;There was a surge in traffic, this triggered our CPU usage alert. We horizontally scaled out the service, meaning add more instances to the region where the alarm is triggered.&lt;/p&gt;
-&lt;h4 id=&#34;the-problem-with-scaling&#34;&gt;The problem with scaling&lt;/h4&gt;
-&lt;p&gt;Now CPU usage drops, but we were hit with another problem. We started to see 429 Too many requests error from the underlying database. The problem with scaling out services, in my opinion, is scaling down is sticky. &lt;em&gt;If there&amp;rsquo;s no problem, maybe don&amp;rsquo;t touch it&amp;quot;&lt;/em&gt; mindset.&lt;/p&gt;
-&lt;h4 id=&#34;the-new-bottleneck&#34;&gt;The new bottleneck&lt;/h4&gt;
-&lt;p&gt;Followed is the fan-out effect. We have many hosts querying the same global DB instance. So the DB became the bottleneck. Lucky for us, we have not reached the limit of scaling out the DB. We only reached the capped capacity, and we can increase this cap. Today, the DB alone costs more money in a month than what I get paid in a year. I feel unjust, but who am I to complain. Maybe it&amp;rsquo;s a common practice in the industry.&lt;/p&gt;
-&lt;h4 id=&#34;lesson-learned&#34;&gt;Lesson learned&lt;/h4&gt;
-&lt;p&gt;Maybe we need a smarter solution to CPU usage problem.&lt;/p&gt;
-&lt;h3 id=&#34;incident-2-i-created-a-record-but-cant-query-for-it&#34;&gt;Incident 2: &lt;em&gt;&amp;ldquo;I created a record, but can&amp;rsquo;t query for it&amp;rdquo;&lt;/em&gt;&lt;/h3&gt;
-&lt;p&gt;The larger organization is focusing on improving the reliability of services. That is, we desire a high reliability metric with commitment in terms of how many 9s we want to achieve. For example, with 4 9s being 99.99% reliable. We have no problem achieving this metric for the service. As long as there is no crash, the service will return some or nothing from the cache. Note that, cache miss will not result in drop in reliability.&lt;/p&gt;
-&lt;h4 id=&#34;the-question-we-asked&#34;&gt;The question we asked&lt;/h4&gt;
-&lt;p&gt;It is eventual consistent, so it may take some time.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;team: &lt;em&gt;&amp;ldquo;How long ago did you create the record&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;client: &lt;em&gt;&amp;ldquo;long enough&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;We have not commited to a SLA for the eventual consistency. However, if it&amp;rsquo;s in the hours, without saying too much about the business logic, let&amp;rsquo;s just say it&amp;rsquo;s not acceptable.&lt;/p&gt;
-&lt;h4 id=&#34;what-is-taking-so-long&#34;&gt;What is taking so long?&lt;/h4&gt;
-&lt;p&gt;The interval set for cache invalidation is typically within 10 seconds. The last scaling out came to haunt us. There was a surge in write traffic, with each write, we amplified the traffic to our DB. To the point 80% of traffic to the DB was throttled.&lt;/p&gt;
-&lt;p&gt;For each throttled request, we retry, but without jitter, meaning after a fix period, all hosts pound the DB on beat. This is a classic thundering herd problem. If leave as is, maybe it will take a few days for hosts to digest the change. However, records that exceeded the max retry attempt will be &amp;ldquo;missing&amp;rdquo;.&lt;/p&gt;
-&lt;h4 id=&#34;the-mitigation&#34;&gt;The mitigation&lt;/h4&gt;
-&lt;p&gt;&lt;strong&gt;A good old restart&lt;/strong&gt;. Hah I learned this trick from my father when I was 5. It works this time as well. When restarting the host, the queue of changed records is flushed. The host will start with a clean slate. The cache will be repopulated with the latest data from the DB.&lt;/p&gt;
-&lt;h4 id=&#34;lesson-learned-2&#34;&gt;Lesson learned 2&lt;/h4&gt;
-&lt;p&gt;We need to be mindful about the fan-out effect and the thundering herd problem. After the incident, maybe we should add jitter for retrying. I also changed the queue of changed records to be a set. This way, we can avoid duplicate work, e.g. if record A is changed twice, we only need to apply the change once.&lt;/p&gt;
-&lt;h3 id=&#34;incident-3-and-onwards-we-need-your-team-to-support-our-new-feature&#34;&gt;Incident 3 and onwards: &lt;em&gt;&amp;ldquo;We need your team to support our new feature&amp;rdquo;&lt;/em&gt;&lt;/h3&gt;
-&lt;p&gt;A lot of the times, incidents for this service were resulted from the increase in write requests without sufficient scaling out of either the service host or the underlying datastore. This service, as I mentioned, is read-heavy. The design decisions were made with this in mind and thus the tradeoffs is to sacrifice write performance for read performance. This is a good tradeoff, but it&amp;rsquo;s not without its own problems.&lt;/p&gt;
-&lt;h4 id=&#34;the-communication-issue&#34;&gt;The communication issue&lt;/h4&gt;
-&lt;p&gt;They are preventable, or at the least, there won&amp;rsquo;t be an incident if we know of the write traffic surge before hand and scale out the bottlenecks accordingly.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;team: &lt;em&gt;&amp;ldquo;We are going to launch a new feature, it will increase the write traffic by 10x&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;my team: &lt;em&gt;&amp;ldquo;ok&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;However, the communication is not always this clear. Sometimes, we are not aware of the new feature. Sometimes, we are aware, but we don&amp;rsquo;t know the impact. Sometimes, we are aware, but we don&amp;rsquo;t know how much it will increase the traffic. Sometimes, we are aware, but we don&amp;rsquo;t know if it&amp;rsquo;s a one time thing or a recurring thing. Sometimes, we are aware, but we don&amp;rsquo;t know if it&amp;rsquo;s a one time thing or a recurring thing. Sometimes, we are aware, but we don&amp;rsquo;t know if it&amp;rsquo;s a one time thing or a recurring thing. Oops, looks like I am repeating myself. You get the idea.&lt;/p&gt;
-&lt;h4 id=&#34;the-solution&#34;&gt;The solution&lt;/h4&gt;
-&lt;p&gt;In my opinion, for my team, we should establish clear SLAs with the clients. If there was expected increase in traffic, it should be discussed laterally.&lt;/p&gt;
-&lt;p&gt;I voiced it out a couple of times but never followed through. Sorry boss! For some team, I&amp;rsquo;m building up the connection, hopefully there will be less surprises in the future.&lt;/p&gt;
-&lt;!-- intermediate --&gt;</content>
-    </item>
-    
-    <item>
-      <title>A simple implementation of a static-site generator</title>
+      <title>A Simple Static Site Generateor: Writing Made Easy!</title>
       <link>/posts/blog-framework.html</link>
       <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
       
       <guid>/posts/blog-framework.html</guid>
-      <description>The framework of this blog TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is Showcase | Hugo (gohugo.io). For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.
-The idea I want something lightweight, something that I set up once and then I can focus on the writing.</description>
-      <content>&lt;h1 id=&#34;the-framework-of-this-blog&#34;&gt;The framework of this blog&lt;/h1&gt;
-&lt;p&gt;TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is &lt;a href=&#34;https://gohugo.io/showcase/&#34;&gt;Showcase | Hugo (gohugo.io)&lt;/a&gt;. For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.&lt;/p&gt;
-&lt;h2 id=&#34;the-idea&#34;&gt;The idea&lt;/h2&gt;
-&lt;p&gt;I want something lightweight, something that I set up once and then I can focus on the writing. It might seem counter-intuitive at this point, shouldn&amp;rsquo;t I just use an out-of-the-box solution like wordpress. Eventually it checks out most of the box, but it needs a backend server to run. Usually, it involves some money costs, that I didn&amp;rsquo;t want to pay at the time. Okay, it can be free, but with a lot of tweaking.&lt;/p&gt;
-&lt;p&gt;In retrospect, I didn&amp;rsquo;t know about &lt;a href=&#34;https://gohugo.io/showcase/&#34;&gt;Showcase | Hugo (gohugo.io)&lt;/a&gt;, which is a static site generator. It&amp;rsquo;s a framework that generates a static website. I might have been reinventing the wheel, but what&amp;rsquo;s the harm in it. I learned a whole bunch, it&amp;rsquo;s a good experience.&lt;/p&gt;
-&lt;h3 id=&#34;the-stacks&#34;&gt;The stacks&lt;/h3&gt;
-&lt;p&gt;I will stick with free tools, and here are the assumptions:&lt;/p&gt;
+      <description>A Simple Static Site Generator: Writing Made Easy! In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I&amp;rsquo;ll walk you through my journey of implementing a straightforward framework that doesn&amp;rsquo;t require coding expertise.
+The Lightbulb Moment My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs.</description>
+      <content>&lt;h1 id=&#34;a-simple-static-site-generator-writing-made-easy&#34;&gt;A Simple Static Site Generator: Writing Made Easy!&lt;/h1&gt;
+&lt;p&gt;In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – &lt;a href=&#34;https://gohugo.io/showcase/&#34;&gt;Hugo&lt;/a&gt;. In this blog, I&amp;rsquo;ll walk you through my journey of implementing a straightforward framework that doesn&amp;rsquo;t require coding expertise.&lt;/p&gt;
+&lt;h2 id=&#34;the-lightbulb-moment&#34;&gt;The Lightbulb Moment&lt;/h2&gt;
+&lt;p&gt;My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs. While WordPress does offer free options, they often come with complex setups. Little did I know about &lt;a href=&#34;https://gohugo.io/showcase/&#34;&gt;Hugo&lt;/a&gt;, a static site generator that simplifies website creation. I may have been reinventing the wheel, but the learning experience was invaluable.&lt;/p&gt;
+&lt;h3 id=&#34;my-toolbox&#34;&gt;My Toolbox&lt;/h3&gt;
+&lt;p&gt;I decided to stick with free tools for my project, making the following assumptions:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;Github page is free.&lt;/li&gt;
-&lt;li&gt;I have ChatGpt plus subscription.&lt;/li&gt;
-&lt;li&gt;I know the frontend stacks (HTML, CSS, JS).&lt;/li&gt;
-&lt;li&gt;I have an existing brand &lt;a href=&#34;https://baophotos.ca/&#34;&gt;BAO Photography&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GitHub Pages are free.&lt;/li&gt;
+&lt;li&gt;I have a ChatGPT Plus subscription.&lt;/li&gt;
+&lt;li&gt;I know my way around frontend technologies (HTML, CSS, JS).&lt;/li&gt;
+&lt;li&gt;I have an established brand - &lt;a href=&#34;https://baophotos.ca/&#34;&gt;BAO Photography&lt;/a&gt;.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;em&gt;Other JS frameworks, like React, Angular are a little excessive for my purpose.&lt;/em&gt;&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;&lt;strong&gt;So, let&amp;rsquo;s create a framework that generates static HTML pages, and then host them on Github page. Point the subdomain of the existing brand to the github page, and we can leverage ChatGPT to do the hardwork, writing most of the code.&lt;/strong&gt;&lt;/p&gt;
-&lt;hr&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The excerpt in the headline might be a little click-baity. One does not need to code, but knowing where which component should be is vital.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;the-setup&#34;&gt;The setup&lt;/h3&gt;
-&lt;p&gt;I will provide step-by-step instructions, following-along is not a must or recommended 😆 My friends call me a troll sometimes, sorry. The reason is that creating your own framework is not the purpose of this post. Let&amp;rsquo;s just use Hugo, or other out-of-the-box solutions, if you need and focus on the writing here.&lt;/p&gt;
-&lt;p&gt;The step-by-step instructions followed is, admitedly, not good. There might be gap, and assumed knowledge.&lt;/p&gt;
-&lt;h4 id=&#34;1-lets-start-with-the-basic-html-page&#34;&gt;1. Let&amp;rsquo;s start with the basic HTML page&lt;/h4&gt;
-&lt;p&gt;Ask ChatGPT or your favorite LLM to generate a basic HTML page with a simple prompt:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;you: &amp;ldquo;Act as a software engineer, write a basic HTML page with title ABC and a tagline XYZ.&amp;rdquo;
-ChatGPT: &amp;ldquo;oh jeez, please do it yourself, I&amp;rsquo;m not a web developer.&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;&amp;hellip;.&lt;/p&gt;
-&lt;p&gt;ChatGPT: &amp;ldquo;okay, I&amp;rsquo;ll try my best, but don&amp;rsquo;t expect too much.&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;&amp;hellip;.&lt;/p&gt;
-&lt;p&gt;ChatGPT: &amp;ldquo;here you go, I&amp;rsquo;m done.&amp;rdquo;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Sorry for the unamusing joke there, but I trust your LLM can do it.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./chatgpt-example.png&#34; alt=&#34;chat session&#34;&gt;&lt;/p&gt;
-&lt;p&gt;At this step, you can also add a stylesheet, and other components on the HTML page. For the blog, I added a container for the list of blog posts.&lt;/p&gt;
-&lt;h4 id=&#34;2-how-do-we-present-a-blog-post&#34;&gt;2. How do we present a blog post?&lt;/h4&gt;
-&lt;p&gt;Wordpress has a notion of post and page. I will do something similar, let&amp;rsquo;s present a blog post as an html page, and give the summary as an entry in the container above.&lt;/p&gt;
-&lt;p&gt;I like markdown, and had experience with it. So, I will use markdown to write the blog post. I then I will ask ChatGPT to give me a script, using Python, to convert the markdown to HTML. The end result is something like this &lt;a href=&#34;https://github.com/Hank-TNguyen/blog/blob/main/markdown-to-html.py&#34;&gt;blog/markdown-to-html.py at main - Hank-TNguyen/blog (github.com)&lt;/a&gt; after a lot of iterations. It does a couple of extra things. It will compile the list of blog posts, and generate a json file that contains the metadata of the posts.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./post-metadata.png&#34; alt=&#34;Post metadata&#34;&gt;&lt;/p&gt;
-&lt;h4 id=&#34;3-lets-display-what-we-have-on-the-main-page&#34;&gt;3. Let&amp;rsquo;s display what we have on the main page&lt;/h4&gt;
-&lt;p&gt;We need to populate the container of the blog post in the main page. The json containing the metadata earlier will be used to populate the container. This needs to happen &amp;ldquo;relatively&amp;rdquo; dynamically when the client loads the page. Each of the entry for a post in this container will provide a link to the actual post. What I ended up doing is to use an iframe in the same main page to display the post. When you see this page, you are actually in an iframe, and the main page is in the background. All posts are loaded at startup time. This is not a worry, I know this is a one-person blog, I figure I will probably have a handful of posts. This setup will probably still be fast.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;relatively&amp;rdquo; is in quotes, because all assets are static, dynamic is in the sense that we load the json file and populate the html container.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h4 id=&#34;4-lets-write-the-first-post&#34;&gt;4. Let&amp;rsquo;s write the first post&lt;/h4&gt;
-&lt;p&gt;As I mentioned, I will use markdown. I asked ChatGPT to give me a powershell script to create a file with a template, a really fancy one I create 😆.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;./markdown-snippet.png&#34; alt=&#34;markdownsnippet&#34;&gt;&lt;/p&gt;
-&lt;p&gt;The script will create a file with the name of the post, it follows a simple rule, get other posts and increment the number. The content is the template above. The script ended up looking like this &lt;a href=&#34;https://github.com/Hank-TNguyen/blog/blob/main/WritePost.ps1&#34;&gt;blog/WritePost.ps1 at main - Hank-TNguyen/blog (github.com)&lt;/a&gt;.&lt;/p&gt;
-&lt;h4 id=&#34;5-execute-scripts-and-publish&#34;&gt;5. Execute scripts and publish&lt;/h4&gt;
-&lt;p&gt;If you check out the github repository &lt;a href=&#34;https://github.com/Hank-TNguyen/blog/tree/main&#34;&gt;Hank-TNguyen/blog: Blog (github.com)&lt;/a&gt;, you can test this locally. Following are the commands I execute when writing a new post&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;.\WritePost.ps1 ;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;python markdown-to-html.py;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add . ;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git push ;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;Summary&lt;/h2&gt;
-&lt;p&gt;That was simple enough. Let&amp;rsquo;s summarize what we did. We created a framework that generates static HTML pages, and then host them on Github page. We can leverage ChatGPT to do the hardwork, writing most of the code, but still I&amp;rsquo;m not too worried about my job security, I need to tell ChatGPT what to write. It turns out to be a pretty good, knowledgeable intern in this setup.&lt;/p&gt;
+&lt;h3 id=&#34;lets-get-started&#34;&gt;Let&amp;rsquo;s Get Started&lt;/h3&gt;
+&lt;p&gt;My approach was to create a framework that generates static HTML pages and host them on GitHub Pages. I would also leverage ChatGPT to do most of the coding heavy lifting. Don&amp;rsquo;t worry; you don&amp;rsquo;t need to be a coding wizard to follow along.&lt;/p&gt;
+&lt;h4 id=&#34;step-1-creating-a-basic-html-page&#34;&gt;Step 1: Creating a Basic HTML Page&lt;/h4&gt;
+&lt;p&gt;You can start by asking ChatGPT to generate a basic HTML page with a title and a tagline. Feel free to add your own styles and components. For my blog, I included a container for the list of blog posts.&lt;/p&gt;
+&lt;h4 id=&#34;step-2-presenting-blog-posts&#34;&gt;Step 2: Presenting Blog Posts&lt;/h4&gt;
+&lt;p&gt;I decided to present each blog post as an HTML page. I wrote my blog posts in Markdown and used a Python script generated with ChatGPT to convert Markdown to HTML. This script also compiled the list of blog posts and generated a JSON file with post metadata.&lt;/p&gt;
+&lt;h4 id=&#34;step-3-displaying-posts&#34;&gt;Step 3: Displaying Posts&lt;/h4&gt;
+&lt;p&gt;To display my blog posts, I populated the container on the main page using the JSON metadata. This process happens relatively dynamically, meaning we load the JSON file and populate the HTML container when the client loads the page. To achieve this, I used iframes to display the posts.&lt;/p&gt;
+&lt;h4 id=&#34;step-4-writing-blog-posts&#34;&gt;Step 4: Writing Blog Posts&lt;/h4&gt;
+&lt;p&gt;I created a Powershell script that generates a new blog post file with a predefined template. The script automatically names the file and increments the post number.&lt;/p&gt;
+&lt;h4 id=&#34;step-5-execute-and-publish&#34;&gt;Step 5: Execute and Publish&lt;/h4&gt;
+&lt;p&gt;With everything set up, I executed my scripts and pushed the changes to my GitHub repository.&lt;/p&gt;
+&lt;h2 id=&#34;in-a-nutshell&#34;&gt;In a Nutshell&lt;/h2&gt;
+&lt;p&gt;This simple framework allowed me to generate static HTML pages and host them on GitHub Pages effortlessly. ChatGPT played a crucial role in automating various tasks, making my life easier. While AI is undoubtedly a powerful tool, I believe that the human touch and creativity will always have a place. It&amp;rsquo;s all about adapting and learning new skills to stay ahead in an ever-changing landscape.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;./overall.png&#34; alt=&#34;Overall/&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Without ChatGPT, this framework would probably take me a few days to materialize. I did all this in an evening and now spend most of the time on the content. As per the risk of AI taking over our jobs discussion, I think it is somewhat overblown. I think we will be fine, we just need to adapt and learn new skills. It increases productivity in certain setups for sure, but when the context gets more complex, I have yet to find it too useful.&lt;/p&gt;
-&lt;!-- basic --&gt;</content>
+&lt;p&gt;So, why spend days on complex setups when you can create your website in an evening? Get creative, write, and let AI do the heavy lifting – it&amp;rsquo;s a win-win situation! 😄&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Exploring the Journey of a Read-Optimized Service</title>
+      <link>/posts/read-optimized-service.html</link>
+      <pubDate>Sun, 02 Jul 2023 13:54:43 -0700</pubDate>
+      
+      <guid>/posts/read-optimized-service.html</guid>
+      <description>The Balancing Act in Crafting a Read-Optimized Service In the world of software engineering, I find myself immersed in the realm of a read-optimized service. Today, I&amp;rsquo;m excited to share some of the fascinating trade-offs that we&amp;rsquo;ve encountered while designing this service. Along the way, I&amp;rsquo;ll also shed light on the challenges and incidents that have shaped our journey. So, let&amp;rsquo;s embark on this insightful exploration together!
+Disclaimer: I may not have the full context behind the design decisions, as they were made by the service&amp;rsquo;s previous owners.</description>
+      <content>&lt;h1 id=&#34;the-balancing-act-in-crafting-a-read-optimized-service&#34;&gt;The Balancing Act in Crafting a Read-Optimized Service&lt;/h1&gt;
+&lt;p&gt;In the world of software engineering, I find myself immersed in the realm of a read-optimized service. Today, I&amp;rsquo;m excited to share some of the fascinating trade-offs that we&amp;rsquo;ve encountered while designing this service. Along the way, I&amp;rsquo;ll also shed light on the challenges and incidents that have shaped our journey. So, let&amp;rsquo;s embark on this insightful exploration together!&lt;/p&gt;
+&lt;p&gt;Disclaimer: I may not have the full context behind the design decisions, as they were made by the service&amp;rsquo;s previous owners. Nevertheless, I&amp;rsquo;m here to provide my perspective on these trade-offs.&lt;/p&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;h3 id=&#34;a-new-landscape&#34;&gt;A New Landscape&lt;/h3&gt;
+&lt;p&gt;As of June 30, 2023, I&amp;rsquo;ve been part of my current team for a year and a half. This team stands out from my previous experiences, as we manage services and components that are relatively isolated. Unlike my previous role, where we had a tightly knit system of interconnected microservices, data flowing seamlessly, and well-defined contracts between upstream and downstream. Work planning was a breeze, and collaboration was encouraged. In my current role, it feels more natural to divide team members into specialized areas of expertise. While this ownership model has its merits, it does come with some overhead for team members to familiarize themselves with other areas. This doesn&amp;rsquo;t mean collaboration isn&amp;rsquo;t encouraged; it&amp;rsquo;s just a bit more complex. I often wonder which setting is more common in the industry, and I&amp;rsquo;d love to hear your thoughts.&lt;/p&gt;
+&lt;h3 id=&#34;my-role&#34;&gt;My Role&lt;/h3&gt;
+&lt;p&gt;As part of this ownership model, I was entrusted with the task of managing a particular service. Unfortunately, the previous owner left shortly after, leaving me to navigate the transition. While I would have preferred a more guided experience, my boss was supportive and gave me the space to dive into the code and make sense of the unstructured or incomplete documentation. The silver lining in this endeavor is that the challenging aspect of this service lies in its scaling, not in its business logic. The business logic is quite straightforward; it&amp;rsquo;s essentially a CRUD store! Scaling, on the other hand, is where the real excitement lies. I&amp;rsquo;ve spent two years with my previous team tackling scaling issues, and while I&amp;rsquo;m no expert, I&amp;rsquo;m immensely grateful for the knowledge I&amp;rsquo;ve gained from my mentor.&lt;/p&gt;
+&lt;h2 id=&#34;the-service&#34;&gt;The Service&lt;/h2&gt;
+&lt;h3 id=&#34;the-core-purpose&#34;&gt;The Core Purpose&lt;/h3&gt;
+&lt;p&gt;As previously mentioned, our service is essentially a CRUD store. Without delving too deep into the intricacies of our business, I can tell you that it&amp;rsquo;s primarily geared towards read-heavy operations, handling roughly 2000 queries per second on a global scale. The p99 latency for this service typically hovers around an impressive sub-50 milliseconds.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./20230630171617.png&#34; alt=&#34;QPS&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;the-architectural-blueprint&#34;&gt;The Architectural Blueprint&lt;/h3&gt;
+&lt;p&gt;The architecture behind this distributed service system is quite fascinating, with several crucial design decisions that have significantly shaped our journey. Let&amp;rsquo;s walk through them one by one.&lt;/p&gt;
+&lt;h4 id=&#34;regional-deployment&#34;&gt;Regional Deployment&lt;/h4&gt;
+&lt;p&gt;Our service is spread across multiple regions, each housing several hosts. All these hosts are meticulously placed behind regional traffic managers, ensuring optimal performance.&lt;/p&gt;
+&lt;h4 id=&#34;underlying-persistent-storage&#34;&gt;Underlying Persistent Storage&lt;/h4&gt;
+&lt;p&gt;We opted for a globally replicated NoSQL database, avoiding the complexity of sharding.&lt;/p&gt;
+&lt;h4 id=&#34;full-in-memory-cache&#34;&gt;Full In-Memory Cache&lt;/h4&gt;
+&lt;p&gt;One of our standout features is maintaining a complete copy of the database in an in-memory cache. When handling read requests, we query the cache instead of the underlying data store.&lt;/p&gt;
+&lt;h4 id=&#34;cache-invalidation&#34;&gt;Cache Invalidation&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Whenever we process write requests, we simultaneously record the changes in another table.&lt;/li&gt;
+&lt;li&gt;Periodically, across all hosts, we read this change record table, query the main table, and update the in-memory cache accordingly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-trade-offs&#34;&gt;The Trade-Offs&lt;/h2&gt;
+&lt;p&gt;With all this groundwork in place, let&amp;rsquo;s dive into the challenges. I&amp;rsquo;ll take you on a chronological journey through the incidents and hurdles my team has faced over the years.&lt;/p&gt;
+&lt;h3 id=&#34;incident-1-the-cpu-usage-surge&#34;&gt;Incident 1: The CPU Usage Surge&lt;/h3&gt;
+&lt;p&gt;We faced a significant spike in traffic, which triggered a CPU usage alert. Our immediate response was to horizontally scale out the service, adding more instances to the region where the alarm had been set off.&lt;/p&gt;
+&lt;h4 id=&#34;scaling-woes&#34;&gt;Scaling Woes&lt;/h4&gt;
+&lt;p&gt;While our CPU usage dropped after scaling, we were soon confronted with another problem. We began to receive &amp;ldquo;429 Too Many Requests&amp;rdquo; errors from the underlying database. This incident underscores one of the perils of scaling out services: scaling down can be sticky. In the immortal words of wisdom, &amp;ldquo;If there&amp;rsquo;s no problem, maybe don&amp;rsquo;t touch it.&amp;rdquo;&lt;/p&gt;
+&lt;h4 id=&#34;discovering-the-new-bottleneck&#34;&gt;Discovering the New Bottleneck&lt;/h4&gt;
+&lt;p&gt;What followed was the fan-out effect. Multiple hosts were querying the same global database instance, causing the database itself to become the bottleneck. Fortunately, we hadn&amp;rsquo;t reached the limits of scaling out the database; we had only reached the capped capacity, which we could increase. In fact, today, our database alone costs more in a month than what I earn in a year. While it may seem unfair, I can&amp;rsquo;t help but wonder if this is a common practice in the industry.&lt;/p&gt;
+&lt;h4 id=&#34;lessons-learned&#34;&gt;Lessons Learned&lt;/h4&gt;
+&lt;p&gt;We realized that we needed a smarter solution for managing CPU usage issues.&lt;/p&gt;
+&lt;h3 id=&#34;incident-2-i-created-a-record-but-cant-find-it&#34;&gt;Incident 2: &amp;ldquo;I Created a Record, But Can&amp;rsquo;t Find It!&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;The larger organization has been on a mission to enhance service reliability. We&amp;rsquo;re aiming for high reliability metrics, specifying how many nines we want to achieve. For example, four nines translate to 99.99% reliability. Achieving this metric for our service is usually a breeze, as long as there&amp;rsquo;s no crash. The service either returns data from the cache or nothing at all, ensuring that cache misses don&amp;rsquo;t compromise reliability.&lt;/p&gt;
+&lt;h4 id=&#34;the-unanswered-question&#34;&gt;The Unanswered Question&lt;/h4&gt;
+&lt;p&gt;However, the catch here is that the service is eventually consistent, which can lead to slight delays.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Team: &amp;ldquo;How long ago did you create the record?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Client: &amp;ldquo;A while back.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;We haven&amp;rsquo;t committed to a specific Service Level Agreement (SLA) for eventual consistency, but if it takes hours, without revealing too much about our business logic, let&amp;rsquo;s just say that it&amp;rsquo;s not acceptable.&lt;/p&gt;
+&lt;h4 id=&#34;the-waiting-game&#34;&gt;The Waiting Game&lt;/h4&gt;
+&lt;p&gt;Cache invalidation is typically set to occur within a 10-second interval. But the repercussions of our previous scaling efforts came back to haunt us. A surge in write traffic resulted in a cascade effect, with each write request amplifying the load on our database. At one point, nearly 80% of the traffic to the database was being throttled.&lt;/p&gt;
+&lt;p&gt;For each throttled request, we attempted retries without introducing jitter, meaning that after a fixed period, all hosts would bombard the database simultaneously. This classic thundering herd problem was causing some records to go missing, as they exceeded the maximum retry attempts.&lt;/p&gt;
+&lt;h4 id=&#34;a-clever-mitigation&#34;&gt;A Clever Mitigation&lt;/h4&gt;
+&lt;p&gt;The solution? A good old-fashioned restart! I learned this trick from my father when I was five, and it still works like a charm. Restarting the host flushes the queue of changed records, offering a clean slate. The cache is then repopulated with the latest data from the database.&lt;/p&gt;
+&lt;h4 id=&#34;lessons-learned-part-2&#34;&gt;Lessons Learned (Part 2)&lt;/h4&gt;
+&lt;p&gt;We realized the importance of addressing the fan-out effect and tackling the thundering herd problem. Following the incident, we introduced jitter when retrying and transitioned the queue of changed records to a set. This change allowed us to avoid duplicate work; for instance, if record A was modified twice, we only needed to apply the change once.&lt;/p&gt;
+&lt;h3 id=&#34;incidents-3-and-beyond-we-need-your-team-to-support-our-new-feature&#34;&gt;Incidents 3 and Beyond: &amp;ldquo;We Need Your Team to Support Our New Feature&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Many of the incidents related to this service were triggered by an upsurge in write requests without a corresponding scale-out of either the service hosts or the underlying datastore. As I&amp;rsquo;ve mentioned, our service predominantly handles read-heavy workloads, and our design decisions reflect this priority. However, this trade-off does present some challenges.&lt;/p&gt;
+&lt;h4 id=&#34;the-communication-conundrum&#34;&gt;The Communication Conundrum&lt;/h4&gt;
+&lt;p&gt;Most of these incidents could have been prevented or at least managed better if we had foreseen the increase in write traffic and scaled out the bottlenecks accordingly.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Team: &amp;ldquo;We&amp;rsquo;re launching a new feature that will increase write traffic by tenfold.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;My Team: &amp;ldquo;Alright.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But the reality of communication is rarely so clear-cut. Sometimes, we aren&amp;rsquo;t aware of the new feature; other times, we&amp;rsquo;re aware but uncertain of its impact. Communication gaps can arise, and it&amp;rsquo;s not always easy to predict how much a feature will increase traffic or whether it&amp;rsquo;s a one-time event or a recurring one. Oops, it seems like I&amp;rsquo;m repeating myself, but you get the idea.&lt;/p&gt;
+&lt;h4 id=&#34;a-proposed-solution&#34;&gt;A Proposed Solution&lt;/h4&gt;
+&lt;p&gt;In my view, clear Service Level Agreements (SLAs) between my team and our clients would go a long way in preventing surprises when it comes to anticipated traffic increases.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve voiced this idea a couple of times but haven&amp;rsquo;t fully implemented it yet. My apologies to my boss! I&amp;rsquo;m gradually building connections with other teams, and I hope that, in the future, there will be fewer surprises.&lt;/p&gt;
+&lt;!-- intermediate --&gt;
+</content>
     </item>
     
   </channel>

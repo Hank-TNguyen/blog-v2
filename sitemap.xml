@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/tags/avaiability.html</loc>
+    <loc>/tags/availability.html</loc>
     <lastmod>2023-10-16T15:56:09-07:00</lastmod>
   </url><url>
     <loc>/</loc>
@@ -23,9 +23,6 @@
     <loc>/posts/client-load-balance.html</loc>
     <lastmod>2023-10-16T15:56:09-07:00</lastmod>
   </url><url>
-    <loc>/posts/read-optimized-service.html</loc>
-    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
-  </url><url>
     <loc>/posts/blog-framework.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
@@ -36,6 +33,9 @@
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/tags/distributedservice.html</loc>
+    <lastmod>2023-10-09T15:56:08-07:00</lastmod>
+  </url><url>
+    <loc>/posts/read-optimized-service.html</loc>
     <lastmod>2023-10-09T15:56:08-07:00</lastmod>
   </url><url>
     <loc>/tags/highqps.html</loc>

@@ -120,7 +120,7 @@ if (!doNotTrack) {
     
       <article class="post on-list">
         <h1 class="post-title">
-          <a href="./posts/client-load-balance.html">Use Client Load Balancing to avoid Single Points of Failure</a>
+          <a href="./posts/client-load-balance.html">Using Client Load Balancing to Boost Service Availability</a>
         </h1>
         <div class="post-meta"><time class="post-date">2023-10-09</time><span class="post-author">hanknguyen</span></div>
 
@@ -131,7 +131,7 @@ if (!doNotTrack) {
             
             #<a href="./tags/loadbalancing/">loadbalancing</a>&nbsp;
             
-            #<a href="./tags/avaiability/">avaiability</a>&nbsp;
+            #<a href="./tags/availability/">availability</a>&nbsp;
             
           </span>
         
@@ -141,7 +141,7 @@ if (!doNotTrack) {
 
         <div class="post-content">
           
-            Service Availability and Single Point of Failure Earlier this year, my boss asked me to evaluate blast radius of outages and if there were single point of failures in our workflow. I found for my service, both outbound and inbound requests, every interaction with other services is a single point of failure. The standard term in micro-service world is Inter-Process Communication (IPC), but my team doesn&rsquo;t adopt the term nor care for other standard terms.
+            Elevating Service Availability and Banishing Single Points of Failure Earlier this year, my boss entrusted me with the task of assessing the impact of outages and identifying any potential single points of failure in our workflow. What I discovered was that every interaction my service had with other services, whether outbound or inbound, constituted a single point of failure. While the micro-service world often uses the term Inter-Process Communication (IPC) to describe this, my team prefers not to be bound by such jargon.
           
         </div>
 
@@ -154,42 +154,7 @@ if (!doNotTrack) {
     
       <article class="post on-list">
         <h1 class="post-title">
-          <a href="./posts/read-optimized-service.html">A problem with a read optimized service</a>
-        </h1>
-        <div class="post-meta"><time class="post-date">2023-07-02</time></div>
-
-        
-          <span class="post-tags">
-            
-            #<a href="./tags/distributedservice/">distributedservice</a>&nbsp;
-            
-            #<a href="./tags/backend/">backend</a>&nbsp;
-            
-            #<a href="./tags/highqps/">highQPS</a>&nbsp;
-            
-          </span>
-        
-
-        
-
-
-        <div class="post-content">
-          
-            Tradeoffs in the design of a read optimized service TL;DR: I am a software engineer working on a read optimized service. I will share some of the tradeoffs we made in the design of the service. I will also share some of the incidents we dealed with throughout the years. I hope this will be a good read for you.
-Disclaimer: I might not know the context of the design decisions, they were made by the previous owners.
-          
-        </div>
-
-        
-          <div>
-            <a class="read-more button" href="./posts/read-optimized-service.html"> →</a>
-          </div>
-        
-      </article>
-    
-      <article class="post on-list">
-        <h1 class="post-title">
-          <a href="./posts/blog-framework.html">A simple implementation of a static-site generator</a>
+          <a href="./posts/blog-framework.html">A Simple Static Site Generateor: Writing Made Easy!</a>
         </h1>
         <div class="post-meta"><time class="post-date">2023-07-02</time></div>
 
@@ -210,14 +175,49 @@ Disclaimer: I might not know the context of the design decisions, they were made
 
         <div class="post-content">
           
-            The framework of this blog TL;DR: there are other Content Management Systems (CMS) out there, some popular ones are WordPress, Wix, etc. Most are backend reliant, but there are exceptions, one is Showcase | Hugo (gohugo.io). For this blog, I implemented my own framework to use just the basics. ChatGPT is involved, and one does not need to know how to code to use it.
-The idea I want something lightweight, something that I set up once and then I can focus on the writing.
+            A Simple Static Site Generator: Writing Made Easy! In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I&rsquo;ll walk you through my journey of implementing a straightforward framework that doesn&rsquo;t require coding expertise.
+The Lightbulb Moment My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs.
           
         </div>
 
         
           <div>
             <a class="read-more button" href="./posts/blog-framework.html"> →</a>
+          </div>
+        
+      </article>
+    
+      <article class="post on-list">
+        <h1 class="post-title">
+          <a href="./posts/read-optimized-service.html">Exploring the Journey of a Read-Optimized Service</a>
+        </h1>
+        <div class="post-meta"><time class="post-date">2023-07-02</time></div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="./tags/distributedservice/">distributedservice</a>&nbsp;
+            
+            #<a href="./tags/backend/">backend</a>&nbsp;
+            
+            #<a href="./tags/highqps/">highQPS</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+        <div class="post-content">
+          
+            The Balancing Act in Crafting a Read-Optimized Service In the world of software engineering, I find myself immersed in the realm of a read-optimized service. Today, I&rsquo;m excited to share some of the fascinating trade-offs that we&rsquo;ve encountered while designing this service. Along the way, I&rsquo;ll also shed light on the challenges and incidents that have shaped our journey. So, let&rsquo;s embark on this insightful exploration together!
+Disclaimer: I may not have the full context behind the design decisions, as they were made by the service&rsquo;s previous owners.
+          
+        </div>
+
+        
+          <div>
+            <a class="read-more button" href="./posts/read-optimized-service.html"> →</a>
           </div>
         
       </article>

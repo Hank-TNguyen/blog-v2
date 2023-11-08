@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>loadbalancing on hanknguyen</title>
-    <link>/tags/loadbalancing.html</link>
-    <description>Recent content in loadbalancing on hanknguyen</description>
+    <title>availability on hanknguyen</title>
+    <link>/tags/availability.html</link>
+    <description>Recent content in availability on hanknguyen</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>hanknguyen {year}</copyright>
-    <lastBuildDate>Mon, 09 Oct 2023 15:52:20 -0700</lastBuildDate><atom:link href="/tags/loadbalancing/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 09 Oct 2023 15:52:20 -0700</lastBuildDate><atom:link href="/tags/availability/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Using Client Load Balancing to Boost Service Availability</title>
       <link>/posts/client-load-balance.html</link>
