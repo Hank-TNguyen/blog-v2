@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>A Simple Static Site Generator :: My New Hugo Site</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A Simple Static Site Generator: Writing Made Easy! In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I’ll walk you through my journey of implementing a straightforward framework that doesn’t require coding expertise.
+The Lightbulb Moment My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs." />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="https://example.org/posts/blog-framework/" />
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://example.org/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://example.org/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="https://example.org/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="A Simple Static Site Generator">
+<meta property="og:description" content="A Simple Static Site Generator: Writing Made Easy! In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I’ll walk you through my journey of implementing a straightforward framework that doesn’t require coding expertise.
+The Lightbulb Moment My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs." />
+<meta property="og:url" content="https://example.org/posts/blog-framework/" />
+<meta property="og:site_name" content="My New Hugo Site" />
+
+  
+  
+  <meta property="og:image" content="https://example.org/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2023-07-02 10:19:14 -0700 PDT" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="https://example.org/">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+    
+  </div>
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://example.org/posts/blog-framework/">A Simple Static Site Generator</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2023-07-02</time><span class="post-author">hanknguyen</span></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://example.org/tags/staticsite/">staticsite</a>&nbsp;
+      
+      #<a href="https://example.org/tags/hugo/">hugo</a>&nbsp;
+      
+      #<a href="https://example.org/tags/blog/">blog</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="a-simple-static-site-generator-writing-made-easy">A Simple Static Site Generator: Writing Made Easy!<a href="#a-simple-static-site-generator-writing-made-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>In a world full of Content Management Systems (CMS) like WordPress and Wix, where most solutions rely on backends, I found an exception – Hugo. In this blog, I’ll walk you through my journey of implementing a straightforward framework that doesn’t require coding expertise.</p>
+<h2 id="the-lightbulb-moment">The Lightbulb Moment<a href="#the-lightbulb-moment" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>My goal was to have a lightweight system that allowed me to focus on writing without the hassle of backend servers and associated costs. While WordPress does offer free options, they often come with complex setups. Little did I know about Hugo, a static site generator that simplifies website creation. I may have been reinventing the wheel, but the learning experience was invaluable.</p>
+<h2 id="my-toolbox">My Toolbox<a href="#my-toolbox" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>I decided to stick with free tools for my project, making the following assumptions:</p>
+<ul>
+<li>GitHub Pages are free.</li>
+<li>I have a ChatGPT Plus subscription.</li>
+<li>I know my way around frontend technologies (HTML, CSS, JS).</li>
+<li>I have an established brand - BAO Photography.</li>
+</ul>
+<h2 id="lets-get-started">Let’s Get Started<a href="#lets-get-started" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>My approach was to create a framework that generates static HTML pages and host them on GitHub Pages. I would also leverage ChatGPT to do most of the coding heavy lifting. Don’t worry; you don’t need to be a coding wizard to follow along.</p>
+<h3 id="step-1-creating-a-basic-html-page">Step 1: Creating a Basic HTML Page<a href="#step-1-creating-a-basic-html-page" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>You can start by asking ChatGPT to generate a basic HTML page with a title and a tagline. Feel free to add your own styles and components. For my blog, I included a container for the list of blog posts.</p>
+<h3 id="step-2-presenting-blog-posts">Step 2: Presenting Blog Posts<a href="#step-2-presenting-blog-posts" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I decided to present each blog post as an HTML page. I wrote my blog posts in Markdown and used a Python script generated with ChatGPT to convert Markdown to HTML. This script also compiled the list of blog posts and generated a JSON file with post metadata.</p>
+<h3 id="step-3-displaying-posts">Step 3: Displaying Posts<a href="#step-3-displaying-posts" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>To display my blog posts, I populated the container on the main page using the JSON metadata. This process happens relatively dynamically, meaning we load the JSON file and populate the HTML container when the client loads the page. To achieve this, I used iframes to display the posts.</p>
+<h3 id="step-4-writing-blog-posts">Step 4: Writing Blog Posts<a href="#step-4-writing-blog-posts" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I created a Powershell script that generates a new blog post file with a predefined template. The script automatically names the file and increments the post number.</p>
+<h3 id="step-5-execute-and-publish">Step 5: Execute and Publish<a href="#step-5-execute-and-publish" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>With everything set up, I executed my scripts and pushed the changes to my GitHub repository.</p>
+<h2 id="in-a-nutshell">In a Nutshell<a href="#in-a-nutshell" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This simple framework allowed me to generate static HTML pages and host them on GitHub Pages effortlessly. ChatGPT played a crucial role in automating various tasks, making my life easier. While AI is undoubtedly a powerful tool, I believe that the human touch and creativity will always have a place. It’s all about adapting and learning new skills to stay ahead in an ever-changing landscape.</p>
+
+      </div></div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2024 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
