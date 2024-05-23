@@ -58,3 +58,5 @@ With everything set up, I executed my scripts and pushed the changes to my GitHu
 ## In a Nutshell
 
 This simple framework allowed me to generate static HTML pages and host them on GitHub Pages effortlessly. ChatGPT played a crucial role in automating various tasks, making my life easier. While AI is undoubtedly a powerful tool, I believe that the human touch and creativity will always have a place. It’s all about adapting and learning new skills to stay ahead in an ever-changing landscape.
+
+![Static site generator diagram](imgs/static-site-generator-diagram.png)
