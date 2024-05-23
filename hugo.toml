@@ -3,7 +3,7 @@ languageCode = 'en-us'
 title = "Bao's Tech"
 theme = 'terminal'
 paginate = 5
-
+googleAnalytics = 'G-746FE3Q60E'
 [params]
   # dir name of your main content (default is `content/posts`).
   # the list of set content will show up on your index page (baseurl).
@@ -68,5 +68,8 @@ paginate = 5
     [languages.en.params.logo]
       logoText = "Bao's Tech"
       logoHomeLink = "/"
+
+    [languages.en.params]
+      reading_speed = 179
 
       

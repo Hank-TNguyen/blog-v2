@@ -5,12 +5,12 @@ author = "hanknguyen"
 authorTwitter = "" #do not include @
 cover = ""
 tags = ["staticsite", "hugo", "blog"]
-keywords = ["", ""]
-description = ""
+keywords = ["staticsite", "hugo", "blog"]
+description = "The structure of a static site generator"
 showFullContent = false
-readingTime = false
+readingTime = true
 hideComments = false
-color = "" #color from the theme settings
+color = "green" #color from the theme settings
 +++
 
 
