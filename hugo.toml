@@ -1,8 +1,9 @@
-baseURL = './'
+baseURL = 'techblog./'
 languageCode = 'en-us'
 title = "Bao's Tech"
 theme = 'terminal'
 paginate = 5
+relativeURLs = true
 googleAnalytics = 'G-746FE3Q60E'
 [params]
   # dir name of your main content (default is `content/posts`).
