@@ -1,4 +1,4 @@
-baseURL = './'
+baseURL = '/'
 languageCode = 'en-us'
 title = "Bao's Tech"
 theme = 'terminal'
