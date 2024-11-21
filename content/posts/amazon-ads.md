@@ -76,3 +76,6 @@ Dispatcher->>AdServer: mutation
 ```
 
 ![breakdown](/imgs/2024-11-19-18-54-50.png)
+
+Naturally, as we adopt the microservice spirit, we want to break service down into smaller logical unit. 
+
