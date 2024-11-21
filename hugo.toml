@@ -5,6 +5,7 @@ theme = 'terminal'
 paginate = 5
 relativeURLs = true
 googleAnalytics = 'G-746FE3Q60E'
+
 [params]
   # dir name of your main content (default is `content/posts`).
   # the list of set content will show up on your index page (baseurl).
@@ -23,7 +24,7 @@ googleAnalytics = 'G-746FE3Q60E'
   fullWidthTheme = false
 
   # center theme with default width
-  centerTheme = false
+  centerTheme = true
 
   # if your resource directory contains an image called `cover.(jpg|png|webp)`,
   # then the file will be used as a cover automatically.
@@ -32,27 +33,27 @@ googleAnalytics = 'G-746FE3Q60E'
 
   # set post to show the last updated
   # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
-  showLastUpdated = false
+  showLastUpdated = true
 
   # set a custom favicon (default is a `themeColor` square)
   # favicon = "favicon.ico"
 
   # Provide a string as a prefix for the last update date. By default, it looks like this: 2020-xx-xx [Updated: 2020-xx-xx] :: Author
-  # updatedDatePrefix = "Updated"
+  updatedDatePrefix = "Updated"
 
   # set all headings to their default size (depending on browser settings)
   # oneHeadingSize = true # default
 
   # whether to show a page's estimated reading time
-  # readingTime = false # default
+  readingTime = true # default
 
   # whether to show a table of contents
   # can be overridden in a page's front-matter
-  # Toc = false # default
+  Toc = true # default
 
   # set title for the table of contents
   # can be overridden in a page's front-matter
-  # TocTitle = "Table of Contents" # default
+  TocTitle = "Table of Contents" # default
 
 
 [params.twitter]
@@ -71,6 +72,6 @@ googleAnalytics = 'G-746FE3Q60E'
       logoHomeLink = "/"
 
     [languages.en.params]
-      reading_speed = 179
+      reading_speed = 120
 
       
