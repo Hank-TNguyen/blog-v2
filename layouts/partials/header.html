@@ -1,0 +1,28 @@
+<header class="header">
+    <div class="header__inner">
+      <div class="header__logo">
+        {{ partial "logo.html" . }}
+      </div>
+      {{ if len $.Site.Menus }}
+        {{ partial "mobile-menu.html" . }}
+      {{ end }}
+      {{ if and $.Site.Params.showLanguageSelector (len $.Site.Home.AllTranslations) }}
+        {{ partial "language-menu.html" . }}
+      {{ end }}
+  
+      <!-- Create a dedicated container for search -->
+      <div class="header__search-container">
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Search..."
+            oninput="handleSearchInput()"
+        />
+        <div id="search-results"></div>
+      </div>
+  
+      {{ if len $.Site.Menus }}
+        {{ partial "menu.html" . }}
+      {{ end }}
+    </div>
+  </header>
